@@ -18,19 +18,14 @@
 
     <style>
         :root {
-            /* Paleta de Colores Vibrantes */
+            /* Paleta de Colores Vibrantes (Actualizada) */
             --bg-board: #f0f4f8;
             --dot-color: #d1d9e6;
-            --shadow-soft: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lift: 0 15px 30px rgba(0,0,0,0.2);
+            --shadow-soft: 0 4px 6px rgba(0,0,0,0.15);
+            --shadow-lift: 0 15px 30px rgba(0,0,0,0.3);
             
-            /* Colores de las notas */
-            --color-yellow: #fff475;
-            --color-pink: #fdcfe8;
-            --color-blue: #cbf0f8;
-            --color-green: #ccff90;
-            --color-purple: #d7aefb;
-            --color-orange: #ffcc80;
+            /* Colores de las notas por defecto (se sobreescriben con JS) */
+            --color-yellow: #FFEA00;
         }
 
         * {
@@ -45,7 +40,7 @@
             height: 100%;
             font-family: 'Fredoka', sans-serif;
             background-color: var(--bg-board);
-            overflow: hidden; /* El body no hace scroll, lo hace el board */
+            overflow: hidden; 
         }
 
         /* --- UI: BARRA SUPERIOR --- */
@@ -60,7 +55,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             display: flex;
             gap: 15px;
-            z-index: 2000; /* Por encima de todo */
+            z-index: 2000;
             align-items: center;
         }
 
@@ -102,7 +97,7 @@
             background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
             background-size: 30px 30px; /* Efecto de puntos */
             
-            /* Habilitar Scroll para ver más notas abajo */
+            /* Habilitar Scroll en ambas direcciones */
             overflow: auto; 
             -webkit-overflow-scrolling: touch;
         }
@@ -111,7 +106,7 @@
         .note {
             position: absolute;
             width: 240px;  /* Ancho fijo */
-            height: 240px; /* Alto fijo para uniformidad */
+            height: 240px; /* Alto fijo */
             background-color: var(--color-yellow);
             border-radius: 20px; 
             box-shadow: var(--shadow-soft);
@@ -121,7 +116,7 @@
             transition: box-shadow 0.2s, transform 0.2s;
             cursor: grab;
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: hidden; /* Para mantener la forma fija */
+            overflow: hidden; 
         }
 
         .note:active {
@@ -137,32 +132,31 @@
         /* Área de Texto */
         .note-content {
             flex-grow: 1;
-            font-size: 1.2rem;
-            color: #333;
+            font-size: 1.3rem; /* Texto un poco más grande */
+            color: #222; /* Texto más oscuro para contraste con colores vivos */
             outline: none;
-            line-height: 1.5;
+            line-height: 1.4;
             user-select: text; 
             cursor: text;
             white-space: pre-wrap;
-            font-weight: 500;
-            overflow-y: auto; /* Scroll interno si escriben mucho texto */
+            font-weight: 600; /* Texto más negrita */
+            overflow-y: auto; 
             
-            /* Personalizar scrollbar interno */
             scrollbar-width: thin;
-            scrollbar-color: rgba(0,0,0,0.1) transparent;
+            scrollbar-color: rgba(0,0,0,0.2) transparent;
         }
         
         .note-content::-webkit-scrollbar {
             width: 6px;
         }
         .note-content::-webkit-scrollbar-thumb {
-            background-color: rgba(0,0,0,0.1);
+            background-color: rgba(0,0,0,0.2);
             border-radius: 10px;
         }
         
         .note-content:empty:before {
             content: '¡Escribe aquí!';
-            color: rgba(0,0,0,0.3);
+            color: rgba(0,0,0,0.4);
         }
 
         /* Controles de la Nota */
@@ -170,10 +164,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 10px; /* Reducido un poco para dar más espacio al texto */
+            margin-top: 10px; 
             opacity: 0;
             transition: opacity 0.2s;
-            flex-shrink: 0; /* Evita que se aplasten */
+            flex-shrink: 0; 
         }
 
         .note:hover .note-controls, 
@@ -193,28 +187,32 @@
             height: 20px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid rgba(255,255,255,0.5);
+            border: 2px solid rgba(255,255,255,0.8);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             transition: transform 0.2s;
         }
         
         .color-dot:hover {
             transform: scale(1.2);
-            border-color: rgba(0,0,0,0.2);
         }
 
         .btn-delete {
-            background: none;
+            background: rgba(255,255,255,0.5);
             border: none;
-            color: #ff5252;
+            color: #d32f2f;
             font-size: 1.2rem;
             cursor: pointer;
-            padding: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: 50%;
             transition: background 0.2s;
         }
 
         .btn-delete:hover {
-            background: rgba(255, 82, 82, 0.1);
+            background: rgba(255, 82, 82, 0.3);
         }
 
         /* --- ANIMACIONES --- */
@@ -267,61 +265,80 @@
         const board = document.getElementById('board');
         let zIndexCounter = 10;
 
-        // Paleta de colores
+        // Paleta de colores VÍVIDOS
         const colors = [
-            { bg: '#fff475', name: 'Amarillo' },
-            { bg: '#fdcfe8', name: 'Rosa' },
-            { bg: '#cbf0f8', name: 'Azul' },
-            { bg: '#ccff90', name: 'Verde' },
-            { bg: '#d7aefb', name: 'Lila' },
-            { bg: '#ffcc80', name: 'Naranja' }
+            { bg: '#FFEB3B', name: 'Amarillo Sol' },   // Amarillo Intenso
+            { bg: '#FF4081', name: 'Fucsia Neón' },    // Rosa Fuerte
+            { bg: '#00E5FF', name: 'Azul Eléctrico' }, // Azul Cian Brillante
+            { bg: '#76FF03', name: 'Verde Lima' },     // Verde Brillante
+            { bg: '#E040FB', name: 'Morado Vivo' },    // Violeta
+            { bg: '#FF9100', name: 'Naranja Fuego' }   // Naranja
         ];
 
-        // --- INICIO: Generar 20 notas automáticamente ---
+        // --- INICIO: Generar 20 notas en CUADRÍCULA 5x4 ---
         window.onload = () => {
             const initialNotesCount = 20;
-            const containerWidth = window.innerWidth;
+            const columns = 5;
             
-            // Textos de ejemplo para los niños
+            // Configuración de la cuadrícula
+            const noteWidth = 240;
+            const noteHeight = 240;
+            const gapX = 30; // Espacio horizontal entre notas
+            const gapY = 30; // Espacio vertical entre notas
+            const startX = 50; // Margen izquierdo inicial
+            const startY = 100; // Margen superior inicial (debajo del toolbar)
+
             const sampleTexts = [
-                "¡Hola!", "Mi idea genial", "Proyecto de Ciencias", "Dibujar un gato", 
+                "¡Hola!", "Idea Brillante", "Proyecto Ciencia", "Dibujar Gato", 
                 "Leer 10 min", "Matemáticas", "Recreo", "Fútbol ⚽", 
                 "Música 🎵", "Estudiar", "Planetas 🪐", "Dinosaurios 🦖",
-                "Inventar algo", "Ayudar en casa", "Hacer la tarea", "Leer un cuento",
+                "Inventar Robot", "Ayudar Casa", "Hacer Tarea", "Leer Cuento",
                 "Amigos", "Cumpleaños 🎂", "Vacaciones", "Arte 🎨"
             ];
 
             for (let i = 0; i < initialNotesCount; i++) {
-                // Posición Aleatoria Esparcida
-                // X: Ancho de pantalla menos ancho nota
-                // Y: Esparcir verticalmente hasta 2500px para forzar el scroll
-                const x = Math.random() * (containerWidth - 260) + 10;
-                const y = Math.random() * (2000) + 80; // Distribución vertical amplia
+                // Cálculo de fila y columna
+                const col = i % columns;          // 0, 1, 2, 3, 4
+                const row = Math.floor(i / columns); // 0, 0, 0, 0, 0, 1, 1...
+
+                // Calcular posición exacta
+                const x = startX + (col * (noteWidth + gapX));
+                const y = startY + (row * (noteHeight + gapY));
 
                 const text = sampleTexts[i] || "";
-                createNote(x, y, text);
+                
+                // Usar color basado en el índice para que se vea variado y ordenado
+                const colorIndex = i % colors.length;
+                createNote(x, y, text, colors[colorIndex].bg);
             }
 
-            // Asegurar que el scroll empiece arriba
+            // Asegurar que el scroll empiece arriba a la izquierda
             board.scrollTop = 0;
+            board.scrollLeft = 0;
         };
 
         function createNewRandomNote() {
             // Crear nota en la parte visible actual del tablero
             const scrollY = board.scrollTop;
-            const x = Math.random() * (window.innerWidth - 260) + 20;
+            const scrollX = board.scrollLeft;
+            
+            // Posición algo aleatoria pero visible
+            const x = scrollX + Math.random() * (window.innerWidth - 300) + 20;
             const y = scrollY + Math.random() * (window.innerHeight - 300) + 100;
-            createNote(x, y, "");
+            
+            // Color aleatorio
+            const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
+            createNote(x, y, "", randomColor);
         }
 
-        function createNote(x, y, text) {
+        function createNote(x, y, text, colorCode) {
             const note = document.createElement('div');
             note.className = 'note';
             
             note.style.left = `${x}px`;
             note.style.top = `${y}px`;
             note.style.zIndex = zIndexCounter++;
-            note.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)].bg;
+            note.style.backgroundColor = colorCode;
 
             note.innerHTML = `
                 <div class="note-content" contenteditable="true" spellcheck="false">${text}</div>
