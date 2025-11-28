@@ -49,7 +49,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            /* AJUSTE 2: Fondo con gradiente vivo en lugar de blanco plano */
+            /* Fondo con gradiente vivo */
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             padding: 10px 25px;
             border-radius: 50px;
@@ -59,7 +59,10 @@
             z-index: 2000;
             align-items: center;
             max-width: 95%; 
-            border: 2px solid white; /* Borde blanco para resaltar el color */
+            border: 2px solid white; 
+            /* Permitir que los elementos flexibles se ajusten */
+            flex-wrap: wrap; 
+            justify-content: center;
         }
 
         /* Estilos compartidos para inputs del toolbar */
@@ -77,6 +80,8 @@
             white-space: nowrap;
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: inline-block;
+            cursor: text;
         }
 
         .toolbar-input:focus {
@@ -85,24 +90,24 @@
             border-color: #fff;
         }
 
-        /* Input del Nombre (Estándar) */
+        /* AJUSTE: Placeholder simulado para todos los inputs editables */
+        .toolbar-input:empty:before {
+            content: attr(placeholder);
+            color: #aaa;
+        }
+
+        /* AJUSTE: Nombre del Estudiante (Elástico) */
         #student-name {
-            width: 180px;
+            min-width: 150px; /* Ancho mínimo razonable */
+            max-width: 300px; /* Crece bastante si es necesario */
             font-weight: 500;
         }
 
-        /* Input del Título (Elástico con contenteditable) */
+        /* Input del Título (Elástico) */
         #project-title {
-            min-width: 250px; 
-            max-width: 500px; 
+            min-width: 200px; 
+            max-width: 450px; 
             font-weight: 600;
-            cursor: text;
-            display: inline-block;
-        }
-
-        #project-title:empty:before {
-            content: attr(placeholder);
-            color: #aaa;
         }
 
         .btn-main {
@@ -143,23 +148,20 @@
             position: relative;
             background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
             background-size: 30px 30px; 
-            overflow-y: auto; /* Scroll vertical principal */
-            overflow-x: auto; /* Scroll horizontal si es necesario */
+            overflow-y: auto; 
+            overflow-x: auto; 
             
-            /* AJUSTE 1: Grid CSS para orden automático */
             display: grid;
-            /* 5 columnas de ancho fijo para mantener consistencia */
             grid-template-columns: repeat(5, 240px); 
-            grid-auto-rows: 250px; /* Altura fija de fila */
-            gap: 25px; /* Espacio entre notas */
-            padding: 100px 50px 100px 50px; /* Padding superior para el toolbar */
-            justify-content: center; /* Centrar la grilla en pantalla */
+            grid-auto-rows: 250px; 
+            gap: 25px; 
+            padding: 120px 50px 100px 50px; /* Padding superior aumentado por seguridad */
+            justify-content: center; 
             align-content: start;
         }
 
         /* --- NOTAS (POST-ITS) --- */
         .note {
-            /* Posición relativa al grid cell */
             position: relative; 
             width: 100%;  
             height: 100%; 
@@ -170,12 +172,11 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.2s, box-shadow 0.2s;
-            cursor: grab; /* Manita abierta */
+            cursor: grab; 
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             overflow: hidden; 
         }
 
-        /* Clase mientras se arrastra (Drag & Drop nativo) */
         .note.sortable-dragging {
             opacity: 0.5;
             transform: scale(0.95);
@@ -383,19 +384,16 @@
 
         @media (max-width: 1300px) {
             #board {
-                /* Si la pantalla es pequeña, bajar a menos columnas o dejar scroll horizontal */
-                /* Para este requerimiento, mantenemos 5 columnas pero permitimos scroll */
                 justify-content: flex-start; 
             }
         }
 
         @media (max-width: 800px) {
             #toolbar {
-                flex-wrap: wrap;
-                justify-content: center;
+                gap: 10px;
             }
-            #student-name { width: 100%; order: 1; }
-            #project-title { width: 100%; order: 2; max-width: 100%; }
+            #student-name { order: 1; width: 100%; max-width: 100%; }
+            #project-title { order: 2; width: 100%; max-width: 100%; }
             .btn-main { order: 3; }
         }
 
@@ -405,10 +403,10 @@
 
     <!-- Barra de Herramientas -->
     <div id="toolbar">
-        <!-- Nombre del Estudiante -->
-        <input type="text" id="student-name" class="toolbar-input" placeholder="Nombre: Estudiante" spellcheck="false">
+        <!-- Nombre del Estudiante (Ahora elástico con contenteditable) -->
+        <span id="student-name" class="toolbar-input" contenteditable="true" placeholder="Nombre: Estudiante" spellcheck="false"></span>
 
-        <!-- Título del Proyecto -->
+        <!-- Título del Proyecto (Elástico) -->
         <span id="project-title" class="toolbar-input" contenteditable="true" placeholder="Título de tu Historia..." spellcheck="false"></span>
 
         <button id="btn-add" class="btn-main" onclick="createNewNote()">
@@ -449,20 +447,17 @@
             for (let i = 0; i < initialNotesCount; i++) {
                 const data = sampleData[i] || { scene: "", dialog: "" };
                 const colorIndex = i % colors.length;
-                // No enviamos coordenadas, el Grid se encarga
                 createNote(data.scene, data.dialog, colors[colorIndex].bg, i + 1);
             }
         };
 
         function createNewNote() {
-            // Se añade al final automáticamente por el Grid
             const allNotes = document.querySelectorAll('.note');
             const count = allNotes.length;
             const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
             
             createNote("", "", randomColor, count + 1);
             
-            // Scroll al final
             setTimeout(() => {
                 const newNote = board.lastElementChild;
                 if(newNote) {
@@ -475,8 +470,6 @@
             const note = document.createElement('div');
             note.className = 'note';
             note.style.backgroundColor = colorCode;
-            
-            // Habilitar Drag & Drop nativo
             note.setAttribute('draggable', 'true');
 
             note.innerHTML = `
@@ -507,19 +500,15 @@
                 </div>
             `;
 
-            // EVENTOS DE DRAG & DROP PARA REORDENAR (SORTABLE)
             note.addEventListener('dragstart', handleDragStart);
             note.addEventListener('dragend', handleDragEnd);
             
-            // Eventos para evitar arrastrar si se escribe
             const inputs = note.querySelectorAll('.editable-area, input');
             inputs.forEach(input => {
                 input.addEventListener('mousedown', (e) => {
-                    // Si clicamos en input, desactivamos draggable temporalmente
                     note.setAttribute('draggable', 'false');
                     e.stopPropagation();
                 });
-                // Reactivamos draggable al salir o soltar
                 input.addEventListener('mouseup', () => note.setAttribute('draggable', 'true'));
                 input.addEventListener('mouseleave', () => note.setAttribute('draggable', 'true'));
             });
@@ -527,62 +516,38 @@
             board.appendChild(note);
         }
 
-        // --- SISTEMA DE REORDENAMIENTO (Drag & Drop Logic) ---
-        
         function handleDragStart(e) {
             e.dataTransfer.effectAllowed = 'move';
             e.target.classList.add('sortable-dragging');
-            // Hack para que la imagen fantasma no incluya el borde discontinuo
             setTimeout(() => e.target.style.opacity = '0.5', 0);
         }
 
         function handleDragEnd(e) {
             e.target.classList.remove('sortable-dragging');
             e.target.style.opacity = '1';
-            // Restaurar cualquier draggable
             const allNotes = document.querySelectorAll('.note');
             allNotes.forEach(n => n.setAttribute('draggable', 'true'));
         }
 
-        // Evento principal en el contenedor Grid
         board.addEventListener('dragover', (e) => {
-            e.preventDefault(); // Permitir drop
-            
+            e.preventDefault(); 
             const draggingItem = document.querySelector('.sortable-dragging');
             if(!draggingItem) return;
 
-            // Encontrar la nota sobre la que estamos pasando
             const siblings = [...board.querySelectorAll('.note:not(.sortable-dragging)')];
             const nextSibling = siblings.find(sibling => {
-                // Lógica geométrica simple para Grid: 
-                // Buscamos el primer elemento cuyo centro esté DESPUÉS del cursor
                 const rect = sibling.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
                 
-                // Si estamos en la misma fila (aprox), miramos X, si no, miramos Y
-                // Para grid flow standard, simplificamos:
-                // Si el cursor está a la izquierda Y arriba del centro del elemento...
-                // Pero para Grid, el orden de DOM define la posición.
-                // Simplemente verificamos si el mouse está antes del centro del elemento en el orden de lectura.
+                if (e.clientY < rect.top) return true; 
+                if (e.clientY > rect.bottom) return false; 
                 
-                // Una aproximación robusta para Grids mixtos:
-                // Si el mouse está "antes" visualmente del elemento.
-                // En un grid LTR, "antes" significa (arriba) O (misma linea y a la izquierda).
-                
-                if (e.clientY < rect.top) return true; // cursor mas arriba
-                if (e.clientY > rect.bottom) return false; // cursor mas abajo
-                
-                // Estamos en la fila visual del elemento, miramos horizontal
                 return e.clientX < centerX;
             });
 
-            // Insertar antes del siguiente elemento, o al final si no hay siguiente
             board.insertBefore(draggingItem, nextSibling);
         });
-
-
-        // --- UTILIDADES ---
 
         function deleteNote(btn) {
             const note = btn.closest('.note');
@@ -603,7 +568,6 @@
             btnAdd.style.display = 'none';
             btnSave.style.display = 'none';
             
-            // Quitar estilos del toolbar para la foto para que se vea limpio
             const oldBackground = toolbar.style.background;
             const oldBoxShadow = toolbar.style.boxShadow;
             const oldBorder = toolbar.style.border;
@@ -616,7 +580,6 @@
             toolbar.style.justifyContent = 'center';
             toolbar.style.top = '20px';
 
-            // Calcular tamaño necesario para capturar todo el scroll
             const targetWidth = board.scrollWidth;
             const targetHeight = board.scrollHeight;
 
@@ -635,7 +598,6 @@
                 link.href = canvas.toDataURL();
                 link.click();
 
-                // Restaurar
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
                 toolbar.style.background = oldBackground;
@@ -647,7 +609,6 @@
                 showToast();
             }).catch(err => {
                 console.error("Error al guardar:", err);
-                // Restaurar en caso de error
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
                 toolbar.style.background = '';
