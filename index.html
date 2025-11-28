@@ -104,11 +104,12 @@
             background: rgba(0,0,0,0.6); 
             backdrop-filter: blur(4px); 
             -webkit-backdrop-filter: blur(4px);
-            z-index: 9990; 
+            z-index: 9990; /* Capa oscura detrás de todo lo resaltado */
             display: none; 
             pointer-events: auto; 
         }
 
+        /* CLASE PARA RESALTAR ELEMENTOS (Efecto Foco) */
         .highlight-active {
             z-index: 9995 !important;
             position: relative; 
@@ -125,10 +126,14 @@
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%) !important; 
         }
 
+        /* Contenedor flotante de la burbuja guía */
         .ped-label-container {
-            width: 280px; display: flex; flex-direction: column; position: absolute; 
-            align-items: center; text-align: left; z-index: 9998; 
+            width: 280px; display: flex; flex-direction: column; 
+            position: fixed; /* AJUSTE: Fixed para estar siempre encima */
+            align-items: center; text-align: left; 
+            z-index: 10000; /* AJUSTE: El más alto para que no se oculte */
             transition: top 0.5s ease, left 0.5s ease; pointer-events: auto; 
+            display: none; /* Controlado por JS */
         }
 
         .ped-cloud {
@@ -160,24 +165,23 @@
 
         .ped-cloud.active { opacity: 1; transform: translateY(0); }
 
-        /* --- ESTILO DE LA EXPLOSIÓN DE BURBUJAS (NUEVO) --- */
+        /* --- ESTILO DE LA EXPLOSIÓN DE BURBUJAS --- */
         #bubble-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
-            z-index: 10000;
+            z-index: 10000; /* Encima de todo */
             overflow: hidden;
-            display: none; /* Se activa con JS */
+            display: none; 
         }
 
         .bubble {
             position: absolute;
             border-radius: 50%;
-            /* Posición inicial en el centro */
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            /* La animación usará variables CSS para la dirección */
-            animation: bubbleExplode 1s ease-out forwards;
+            /* AJUSTE: Animación más rápida (0.6s) */
+            animation: bubbleExplode 0.6s ease-out forwards;
         }
 
         @keyframes bubbleExplode {
@@ -187,7 +191,6 @@
             }
             100% {
                 opacity: 0;
-                /* Se mueven a una posición final aleatoria y se hacen pequeños */
                 transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2);
             }
         }
@@ -348,19 +351,20 @@
         </div>
     </div>
 
-    <!-- CAPA DE GUÍAS INTERACTIVAS -->
-    <div id="guide-overlay">
-        <!-- Contenedor para la explosión de burbujas -->
-        <div id="bubble-container"></div>
+    <!-- CAPA DE FONDO OSCURO PARA GUÍAS (Separada para manejo de capas) -->
+    <div id="guide-overlay"></div>
 
-        <div id="guide-container" class="ped-label-container">
-            <div id="guide-cloud" class="ped-cloud">
-                <button class="close-guide-btn" onclick="nextGuideStep()"><i class="fas fa-times"></i></button>
-                <h3 id="guide-title">Título Guía</h3>
-                <p id="guide-text">Texto de la guía...</p>
-            </div>
+    <!-- CONTENEDOR DE LA BURBUJA GUÍA (Fuera del overlay para estar siempre encima) -->
+    <div id="guide-container" class="ped-label-container">
+        <div id="guide-cloud" class="ped-cloud">
+            <button class="close-guide-btn" onclick="nextGuideStep()"><i class="fas fa-times"></i></button>
+            <h3 id="guide-title">Título Guía</h3>
+            <p id="guide-text">Texto de la guía...</p>
         </div>
     </div>
+
+    <!-- CONTENEDOR DE EXPLOSIÓN DE BURBUJAS (Fuera del overlay) -->
+    <div id="bubble-container"></div>
 
     <!-- Contenedor Principal -->
     <div id="app-container">
@@ -410,6 +414,7 @@
             setTimeout(() => {
                 intro.style.display = 'none';
                 document.getElementById('guide-overlay').style.display = 'block';
+                document.getElementById('guide-container').style.display = 'flex'; // Mostrar guía
                 showGuideStep(0);
             }, 500);
         }
@@ -471,6 +476,7 @@
             let top = rect.bottom + 15; 
             let left = rect.left + (rect.width / 2) - 140; 
 
+            // Ajuste para evitar que se salga de la pantalla (móvil)
             if (left < 10) left = 10;
             if (left + 280 > window.innerWidth) left = window.innerWidth - 290;
 
@@ -490,46 +496,38 @@
             // Ocultar burbuja guía actual
             document.getElementById('guide-container').style.display = 'none';
 
-            // --- NUEVA ANIMACIÓN DE EXPLOSIÓN ---
+            // --- ANIMACIÓN DE EXPLOSIÓN ---
             const bubbleContainer = document.getElementById('bubble-container');
             bubbleContainer.style.display = 'block';
-            bubbleContainer.innerHTML = ''; // Limpiar anteriores
+            bubbleContainer.innerHTML = ''; 
 
-            const numBubbles = 30; // Cantidad de burbujas
+            const numBubbles = 30; 
             
             for (let i = 0; i < numBubbles; i++) {
                 const bubble = document.createElement('div');
                 bubble.className = 'bubble';
-                
-                // Color aleatorio de nuestra paleta
                 const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
                 bubble.style.backgroundColor = randomColor;
                 
-                // Tamaño aleatorio entre 10px y 30px
                 const size = Math.random() * 20 + 10;
                 bubble.style.width = `${size}px`;
                 bubble.style.height = `${size}px`;
 
-                // Dirección aleatoria para la explosión
-                const angle = Math.random() * Math.PI * 2; // Ángulo aleatorio
-                const distance = Math.random() * 200 + 100; // Distancia entre 100px y 300px
+                const angle = Math.random() * Math.PI * 2; 
+                const distance = Math.random() * 200 + 100; 
                 const tx = Math.cos(angle) * distance;
                 const ty = Math.sin(angle) * distance;
                 
-                // Pasar las variables CSS para la animación
                 bubble.style.setProperty('--tx', `${tx}px`);
                 bubble.style.setProperty('--ty', `${ty}px`);
-                
-                // Un pequeño retraso aleatorio para que no salgan todas a la vez
                 bubble.style.animationDelay = `${Math.random() * 0.2}s`;
 
                 bubbleContainer.appendChild(bubble);
             }
 
-            // Cerrar todo después de la animación
             setTimeout(() => {
                 bubbleContainer.style.display = 'none';
-                bubbleContainer.innerHTML = ''; // Limpiar DOM
+                bubbleContainer.innerHTML = ''; 
                 
                 const overlay = document.getElementById('guide-overlay');
                 overlay.style.opacity = '0';
@@ -537,7 +535,7 @@
                     overlay.style.display = 'none';
                     overlay.style.pointerEvents = 'none'; 
                 }, 500);
-            }, 1200); // Tiempo suficiente para que termine la animación
+            }, 800); // Acortado para coincidir con la animación rápida
         }
 
         // --- LÓGICA DEL TABLERO ---
