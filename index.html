@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mi Storyboard Mágico</title>
     
-    <!-- Fuente amigable para niños (Existente) -->
+    <!-- Fuente amigable para niños -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Fuentes para la Bienvenida (Nuevas) -->
+    <!-- Fuentes para la Bienvenida y Guías -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Librería de Iconos -->
@@ -28,7 +28,7 @@
             --shadow-lift: 0 15px 30px rgba(0,0,0,0.3);
             --color-yellow: #FFEA00;
 
-            /* Paleta de Colores de la Bienvenida */
+            /* Paleta de Colores de la Bienvenida y Guías */
             --accent-color: #5d4037; /* Marrón */
             --gold-color: #d4af37;   /* Dorado */
             --endpaper-bg: #a5d6a7;  /* Verde suave */
@@ -50,15 +50,15 @@
             overflow-y: auto; 
         }
 
-        /* --- ESTILOS DE LA PANTALLA DE BIENVENIDA (NUEVO) --- */
+        /* --- ESTILOS DE LA PANTALLA DE BIENVENIDA --- */
         .intro-overlay {
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100%; 
             height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 9999; /* Encima de todo */
+            background: rgba(0,0,0,0.8);
+            z-index: 9999; 
             display: flex; 
             align-items: center; 
             justify-content: center;
@@ -116,10 +116,7 @@
             font-weight: 400;
         }
         
-        /* Negritas dentro del texto de intro */
-        .intro-text strong {
-            color: var(--accent-color);
-        }
+        .intro-text strong { color: var(--accent-color); }
 
         .close-intro-btn {
             position: absolute; 
@@ -132,11 +129,7 @@
             cursor: pointer;
             transition: 0.3s;
         }
-
-        .close-intro-btn:hover { 
-            color: var(--accent-color); 
-            transform: rotate(90deg); 
-        }
+        .close-intro-btn:hover { color: var(--accent-color); transform: rotate(90deg); }
 
         .action-btn {
             background: var(--accent-color); 
@@ -150,17 +143,95 @@
             transition: 0.3s; 
             box-shadow: 0 5px 15px rgba(93, 64, 55, 0.3);
         }
-
-        .action-btn:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 8px 20px rgba(93, 64, 55, 0.4); 
-            background: var(--gold-color); 
-        }
+        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(93, 64, 55, 0.4); background: var(--gold-color); }
 
         @keyframes popInModal {
             from { opacity: 0; transform: scale(0.8) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
+
+        /* --- ESTILOS DE LAS BURBUJAS GUÍA (AJUSTADO: Sin personaje, flecha arriba) --- */
+        #guide-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.0); /* Transparente pero bloquea clics */
+            z-index: 9990; 
+            display: none; 
+            pointer-events: auto; 
+        }
+
+        /* Contenedor flotante */
+        .ped-label-container {
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            position: absolute; 
+            align-items: center; /* Centrado para que la flecha quede bien */
+            text-align: left;
+            z-index: 9995;
+            transition: top 0.5s ease, left 0.5s ease;
+            pointer-events: auto; 
+        }
+
+        .ped-cloud {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+            border: 1px solid #eee;
+            position: relative;
+            width: 100%;
+            margin-bottom: 0; /* Ya no hay personaje abajo */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Triangulito (Flecha) APUNTANDO ARRIBA */
+        .ped-cloud::after {
+            content: ''; 
+            position: absolute; 
+            bottom: 100%; /* Ubicado encima de la burbuja */
+            left: 50%; /* Centrado */
+            transform: translateX(-50%);
+            border-width: 0 10px 10px 10px; /* Triángulo apuntando arriba */
+            border-style: solid; 
+            border-color: transparent transparent #fff transparent;
+        }
+
+        .ped-cloud h3 {
+            font-family: 'Cinzel', serif; 
+            color: var(--accent-color); 
+            font-size: 1rem;
+            margin: 0 0 8px 0; 
+            border-bottom: 2px solid var(--gold-color); 
+            display: inline-block; 
+            padding-bottom: 3px;
+            font-weight: 700;
+        }
+
+        .ped-cloud p { 
+            font-family: 'Lato', sans-serif; 
+            font-size: 0.9rem; 
+            color: #666; 
+            line-height: 1.5; 
+            margin: 0;
+        }
+
+        .close-guide-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+        .close-guide-btn:hover { color: var(--accent-color); }
+
+        .ped-cloud.active { opacity: 1; transform: translateY(0); }
 
         /* --- ESTILOS DEL TABLERO (EXISTENTES) --- */
         #app-container {
@@ -213,30 +284,11 @@
             cursor: text;
         }
 
-        .toolbar-input:focus {
-            background: white;
-            transform: scale(1.02);
-            border-color: #fff;
-        }
+        .toolbar-input:focus { background: white; transform: scale(1.02); border-color: #fff; }
+        .toolbar-input:empty:before { content: attr(placeholder); color: #aaa; }
 
-        .toolbar-input:empty:before {
-            content: attr(placeholder);
-            color: #aaa;
-        }
-
-        #student-name {
-            min-width: 120px;
-            max-width: 250px; 
-            flex: 1 1 auto;
-            font-weight: 500;
-        }
-
-        #project-title {
-            min-width: 150px; 
-            max-width: 500px;
-            flex: 2 1 auto;
-            font-weight: 600;
-        }
+        #student-name { min-width: 120px; max-width: 250px; flex: 1 1 auto; font-weight: 500; }
+        #project-title { min-width: 150px; max-width: 500px; flex: 2 1 auto; font-weight: 600; }
 
         .btn-main {
             border: none;
@@ -254,20 +306,10 @@
             flex-shrink: 0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
+        .btn-main:active { transform: scale(0.95); }
 
-        .btn-main:active {
-            transform: scale(0.95);
-        }
-
-        #btn-add {
-            background: linear-gradient(135deg, #FF4081, #F50057);
-            color: white;
-        }
-
-        #btn-save {
-            background: linear-gradient(135deg, #00E5FF, #00B0FF);
-            color: white;
-        }
+        #btn-add { background: linear-gradient(135deg, #FF4081, #F50057); color: white; }
+        #btn-save { background: linear-gradient(135deg, #00E5FF, #00B0FF); color: white; }
 
         #board {
             width: 100%;
@@ -281,33 +323,23 @@
             padding: 0 20px;
         }
 
-        @media (max-width: 1350px) {
-            #board { grid-template-columns: repeat(4, 240px); }
-        }
-        
-        @media (max-width: 1100px) {
-            #board { grid-template-columns: repeat(3, 240px); }
-        }
-
+        @media (max-width: 1350px) { #board { grid-template-columns: repeat(4, 240px); } }
+        @media (max-width: 1100px) { #board { grid-template-columns: repeat(3, 240px); } }
         @media (max-width: 850px) {
             #board { grid-template-columns: repeat(2, 240px); }
             #toolbar { flex-wrap: wrap; width: 90%; }
             #student-name, #project-title { max-width: 100%; width: auto; }
         }
-
         @media (max-width: 550px) {
-            #board {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 0 15px;
-                width: 100%;
-                max-width: 350px;
-            }
+            #board { grid-template-columns: 1fr; gap: 20px; padding: 0 15px; width: 100%; max-width: 350px; }
             .note { width: 100% !important; height: 280px; }
             #toolbar { width: 95%; padding: 10px; flex-direction: row; flex-wrap: wrap; gap: 8px; }
             #student-name { width: 100%; max-width: 100%; order: 1; text-align: center; }
             #project-title { width: 100%; max-width: 100%; order: 2; text-align: center; }
             .btn-main { order: 3; flex-grow: 1; justify-content: center; }
+            
+            /* Ajuste de la guía para móvil */
+            .ped-label-container { width: 220px; }
         }
 
         .note {
@@ -326,188 +358,74 @@
             overflow: hidden; 
         }
 
-        .note.sortable-dragging {
-            opacity: 0.5;
-            transform: scale(0.95);
-            border: 2px dashed #333;
-            cursor: grabbing;
-        }
+        .note.sortable-dragging { opacity: 0.5; transform: scale(0.95); border: 2px dashed #333; cursor: grabbing; }
 
-        .note-header {
-            display: flex;
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 6px;
-        }
+        .note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 
         .page-toggle {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            background: rgba(255,255,255,0.4);
-            padding: 2px 6px;
-            border-radius: 8px;
-            transition: background 0.2s;
+            font-size: 0.75rem; font-weight: 700; color: rgba(0,0,0,0.6); display: flex; align-items: center; gap: 4px; cursor: pointer;
+            background: rgba(255,255,255,0.4); padding: 2px 6px; border-radius: 8px; transition: background 0.2s;
         }
-
         .page-toggle:hover { background: rgba(255,255,255,0.7); }
         .page-toggle input { cursor: pointer; width: 12px; height: 12px; margin: 0; }
 
         .scene-badge {
-            background: rgba(255,255,255,0.6);
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #444;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: help; 
+            background: rgba(255,255,255,0.6); border-radius: 12px; padding: 2px 8px; font-size: 0.8rem; font-weight: 700; color: #444;
+            display: flex; align-items: center; gap: 5px; cursor: help; 
         }
 
         .scene-number-input {
-            width: 30px;
-            border: none;
-            background: transparent;
-            font-family: 'Fredoka', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #222;
-            text-align: center;
-            outline: none;
-            cursor: text;
-            user-select: text;
+            width: 30px; border: none; background: transparent; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.9rem;
+            color: #222; text-align: center; outline: none; cursor: text; user-select: text;
         }
-        .scene-number-input::-webkit-outer-spin-button,
-        .scene-number-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .scene-number-input::-webkit-outer-spin-button, .scene-number-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        .note-body {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            padding-right: 2px;
-        }
+        .note-body { flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; scrollbar-width: thin; padding-right: 2px; }
         .note-body::-webkit-scrollbar { width: 4px; }
         .note-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
 
-        .field-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: rgba(0,0,0,0.6);
-            margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+        .field-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: rgba(0,0,0,0.6); margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
 
         .editable-area {
-            width: 100%;
-            background: rgba(255,255,255,0.4);
-            border-radius: 8px;
-            padding: 8px;
-            font-size: 0.9rem; 
-            line-height: 1.3;
-            color: #222;
-            font-weight: 500;
-            outline: none;
-            border: 1px solid transparent;
-            user-select: text;
-            cursor: text;
-            min-height: 40px;
-            white-space: pre-wrap;
+            width: 100%; background: rgba(255,255,255,0.4); border-radius: 8px; padding: 8px; font-size: 0.9rem; line-height: 1.3;
+            color: #222; font-weight: 500; outline: none; border: 1px solid transparent; user-select: text; cursor: text; min-height: 40px; white-space: pre-wrap;
         }
-
         .editable-area:focus { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.1); }
         .editable-area:empty:before { content: attr(placeholder); color: rgba(0,0,0,0.3); font-style: italic; font-weight: 400; }
 
         .dialogue-input { font-family: 'Fredoka', sans-serif; }
 
-        .note-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px; 
-            opacity: 0;
-            transition: opacity 0.2s;
-            flex-shrink: 0; 
-        }
-
-        .note:hover .note-controls, 
-        .note:focus-within .note-controls,
-        .note.active .note-controls { opacity: 1; }
+        .note-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
+        .note:hover .note-controls, .note:focus-within .note-controls, .note.active .note-controls { opacity: 1; }
 
         .color-picker { display: flex; gap: 4px; }
-
-        .color-dot {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid rgba(255,255,255,0.6);
-            transition: transform 0.2s;
-        }
+        .color-dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.6); transition: transform 0.2s; }
         .color-dot:hover { transform: scale(1.2); }
 
         .btn-delete {
-            background: rgba(255,255,255,0.5);
-            border: none;
-            color: #d32f2f;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background 0.2s;
+            background: rgba(255,255,255,0.5); border: none; color: #d32f2f; font-size: 1rem; cursor: pointer; width: 26px; height: 26px;
+            display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s;
         }
         .btn-delete:hover { background: rgba(255, 82, 82, 0.3); }
 
-        @keyframes popIn {
-            from { transform: scale(0) rotate(-10deg); opacity: 0; }
-            to { transform: scale(1) rotate(0); opacity: 1; }
-        }
+        @keyframes popIn { from { transform: scale(0) rotate(-10deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
 
         #toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: transform 0.3s;
-            z-index: 3000;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white;
+            padding: 12px 24px; border-radius: 30px; font-weight: 600; transition: transform 0.3s; z-index: 3000;
         }
         #toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
-    <!-- MODAL DE BIENVENIDA (MODIFICADO) -->
+    <!-- MODAL DE BIENVENIDA -->
     <div class="intro-overlay" id="introOverlay">
         <div class="intro-modal">
-            <!-- Botón X -->
-            <button class="close-intro-btn" onclick="closeIntro()"><i class="fas fa-times"></i></button>
-            
-            <!-- Imagen Personaje -->
+            <button class="close-intro-btn" onclick="startGuide()"><i class="fas fa-times"></i></button>
             <div class="intro-character-circle">
                 <img src="https://github.com/libroalbum/libro-lbum-pedag-gico/blob/main/images/personaje%20derecha.png?raw=true" class="intro-character-img" alt="Guía">
             </div>
-            
-            <!-- Textos ADAPTADOS -->
             <h2 class="intro-title">¡Hola, Aventurero!</h2>
             <p class="intro-text">
                 Bienvenido a tu taller creativo. Aquí construirás el <strong>Storyboard</strong> para tu libro álbum digital.
@@ -516,23 +434,26 @@
                 <br><br>
                 <em>A continuación, encontrarás orientaciones sobre las partes del tablero y cómo usar sus herramientas.</em>
             </p>
-            
-            <!-- Botón Principal -->
-            <button class="action-btn" onclick="closeIntro()">Comenzar a Crear</button>
+            <button class="action-btn" onclick="startGuide()">Comenzar a Crear</button>
         </div>
     </div>
 
-    <!-- Contenedor Principal (Scrollable) -->
+    <!-- CAPA DE GUÍAS INTERACTIVAS (Sin personaje) -->
+    <div id="guide-overlay">
+        <div id="guide-container" class="ped-label-container">
+            <div id="guide-cloud" class="ped-cloud">
+                <button class="close-guide-btn" onclick="nextGuideStep()"><i class="fas fa-times"></i></button>
+                <h3 id="guide-title">Título Guía</h3>
+                <p id="guide-text">Texto de la guía...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor Principal -->
     <div id="app-container">
-
-        <!-- Barra de Herramientas -->
         <div id="toolbar">
-            <!-- Nombre del Estudiante -->
             <span id="student-name" class="toolbar-input" contenteditable="true" placeholder="Nombre: Estudiante" spellcheck="false"></span>
-
-            <!-- Título del Proyecto -->
             <span id="project-title" class="toolbar-input" contenteditable="true" placeholder="Título de tu Historia..." spellcheck="false"></span>
-
             <button id="btn-add" class="btn-main" onclick="createNewNote()">
                 <i class="fa-solid fa-plus"></i> Nueva Nota
             </button>
@@ -540,24 +461,119 @@
                 <i class="fa-solid fa-camera"></i> Foto
             </button>
         </div>
-
-        <!-- El Tablero (Grid) -->
         <div id="board"></div>
-
     </div>
 
     <div id="toast">¡Storyboard guardado! 📸</div>
 
     <script>
-        // --- FUNCIÓN PARA CERRAR BIENVENIDA ---
-        function closeIntro() {
-            const overlay = document.getElementById('introOverlay');
-            overlay.style.opacity = '0';
+        // --- LÓGICA DE LA GUÍA INTERACTIVA ---
+        let currentGuideStep = 0;
+        
+        // Datos de los pasos de la guía
+        const guideSteps = [
+            {
+                targetId: 'btn-add',
+                title: 'Nueva Nota',
+                text: 'Usa este botón para agregar una nueva nota a tu tablero cuando tengas una nueva idea.'
+            },
+            {
+                targetSelector: '.page-toggle', 
+                title: 'Doble Página',
+                text: 'Marca esta casilla si tu escena ocupará una doble página en el libro álbum.'
+            },
+            {
+                targetId: 'btn-save',
+                title: 'Capturar Tablero',
+                text: 'Al finalizar, haz clic aquí. Se tomará una captura de tu tablero que se descargará en tu computador. ¡Recuerda enviársela a tu profesor!'
+            }
+        ];
+
+        function startGuide() {
+            // Cierra el modal de bienvenida
+            const intro = document.getElementById('introOverlay');
+            intro.style.opacity = '0';
             setTimeout(() => {
-                overlay.style.display = 'none';
+                intro.style.display = 'none';
+                // Inicia la guía
+                document.getElementById('guide-overlay').style.display = 'block';
+                showGuideStep(0);
             }, 500);
         }
 
+        function showGuideStep(index) {
+            if (index >= guideSteps.length) {
+                // Fin de la guía
+                endGuide();
+                return;
+            }
+
+            const step = guideSteps[index];
+            let targetEl = null;
+
+            if (step.targetId) {
+                targetEl = document.getElementById(step.targetId);
+            } else if (step.targetSelector) {
+                targetEl = document.querySelector(step.targetSelector);
+            }
+
+            if (!targetEl) {
+                // Si no encuentra el elemento (raro), salta al siguiente
+                nextGuideStep();
+                return;
+            }
+
+            // Actualizar textos
+            document.getElementById('guide-title').innerText = step.title;
+            document.getElementById('guide-text').innerText = step.text;
+
+            // Posicionar la burbuja debajo del elemento
+            positionGuide(targetEl);
+
+            // Activar animaciones
+            const cloud = document.getElementById('guide-cloud');
+            
+            // Resetear clases para reiniciar animación
+            cloud.classList.remove('active');
+            
+            setTimeout(() => {
+                cloud.classList.add('active');
+            }, 50);
+        }
+
+        function positionGuide(targetElement) {
+            const container = document.getElementById('guide-container');
+            const rect = targetElement.getBoundingClientRect();
+            
+            // Posicionar DEBAJO del elemento
+            let top = rect.bottom + 15; 
+            
+            // Centrar horizontalmente respecto al elemento (280px es el ancho del container)
+            let left = rect.left + (rect.width / 2) - 140; 
+
+            // Correcciones de bordes
+            if (left < 10) left = 10;
+            if (left + 280 > window.innerWidth) left = window.innerWidth - 290;
+
+            container.style.top = `${top}px`;
+            container.style.left = `${left}px`;
+        }
+
+        function nextGuideStep() {
+            currentGuideStep++;
+            showGuideStep(currentGuideStep);
+        }
+
+        function endGuide() {
+            const overlay = document.getElementById('guide-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                overlay.style.pointerEvents = 'none'; 
+            }, 500);
+        }
+
+        // --- LÓGICA DEL TABLERO (EXISTENTE) ---
         const board = document.getElementById('board');
         const appContainer = document.getElementById('app-container');
         
@@ -591,14 +607,10 @@
             const allNotes = document.querySelectorAll('.note');
             const count = allNotes.length;
             const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
-            
             createNote("", "", randomColor, count + 1);
-            
             setTimeout(() => {
                 const newNote = board.lastElementChild;
-                if(newNote) {
-                    newNote.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
+                if(newNote) newNote.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
         }
 
@@ -607,7 +619,6 @@
             note.className = 'note';
             note.style.backgroundColor = colorCode;
             note.setAttribute('draggable', 'true');
-
             note.innerHTML = `
                 <div class="note-header">
                     <label class="page-toggle" title="¿Es página doble?">
@@ -617,15 +628,12 @@
                         # <input type="number" class="scene-number-input" value="${sceneNum}" min="1">
                     </div>
                 </div>
-
                 <div class="note-body">
                     <div class="field-label"><i class="fa-solid fa-video"></i> Descripción de escena</div>
                     <div class="editable-area scene-input" contenteditable="true" placeholder="Describe el lugar...">${sceneText}</div>
-                    
                     <div class="field-label" style="margin-top: 8px;"><i class="fa-solid fa-comments"></i> Diálogo</div>
                     <div class="editable-area dialogue-input" contenteditable="true" placeholder="¿Qué dicen?">${dialogText}</div>
                 </div>
-
                 <div class="note-controls">
                     <div class="color-picker">
                         ${colors.map(c => `<div class="color-dot" style="background-color: ${c.bg}" onclick="changeColor(this, '${c.bg}')" title="${c.name}"></div>`).join('')}
@@ -635,20 +643,14 @@
                     </button>
                 </div>
             `;
-
             note.addEventListener('dragstart', handleDragStart);
             note.addEventListener('dragend', handleDragEnd);
-            
             const inputs = note.querySelectorAll('.editable-area, input');
             inputs.forEach(input => {
-                input.addEventListener('mousedown', (e) => {
-                    note.setAttribute('draggable', 'false');
-                    e.stopPropagation();
-                });
+                input.addEventListener('mousedown', (e) => { note.setAttribute('draggable', 'false'); e.stopPropagation(); });
                 input.addEventListener('mouseup', () => note.setAttribute('draggable', 'true'));
                 input.addEventListener('mouseleave', () => note.setAttribute('draggable', 'true'));
             });
-
             board.appendChild(note);
         }
 
@@ -669,19 +671,12 @@
             e.preventDefault(); 
             const draggingItem = document.querySelector('.sortable-dragging');
             if(!draggingItem) return;
-
             const siblings = [...board.querySelectorAll('.note:not(.sortable-dragging)')];
             const nextSibling = siblings.find(sibling => {
                 const rect = sibling.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                
-                if (e.clientY < rect.top) return true; 
-                if (e.clientY > rect.bottom) return false; 
-                
                 return e.clientX < centerX;
             });
-
             board.insertBefore(draggingItem, nextSibling);
         });
 
@@ -700,35 +695,26 @@
             const toolbar = document.getElementById('toolbar');
             const btnAdd = document.getElementById('btn-add');
             const btnSave = document.getElementById('btn-save');
-            
             btnAdd.style.display = 'none';
             btnSave.style.display = 'none';
-            
             const oldBackground = toolbar.style.background;
             const oldBoxShadow = toolbar.style.boxShadow;
             const oldBorder = toolbar.style.border;
             const oldPosition = toolbar.style.position;
-            
             toolbar.style.background = 'transparent';
             toolbar.style.boxShadow = 'none';
             toolbar.style.border = 'none';
-            
-            html2canvas(appContainer, { 
-                backgroundColor: '#f0f4f8',
-                scale: 2 
-            }).then(canvas => {
+            html2canvas(appContainer, { backgroundColor: '#f0f4f8', scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'mi-storyboard-completo.png';
                 link.href = canvas.toDataURL();
                 link.click();
-
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
                 toolbar.style.background = oldBackground;
                 toolbar.style.boxShadow = oldBoxShadow;
                 toolbar.style.border = oldBorder;
                 toolbar.style.position = oldPosition;
-                
                 showToast();
             }).catch(err => {
                 console.error("Error al guardar:", err);
@@ -746,7 +732,6 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
-
     </script>
 </body>
 </html>
