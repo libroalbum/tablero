@@ -49,36 +49,40 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: white;
-            padding: 8px 20px;
+            /* AJUSTE 2: Fondo con gradiente vivo en lugar de blanco plano */
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 10px 25px;
             border-radius: 50px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             display: flex;
             gap: 12px;
             z-index: 2000;
             align-items: center;
-            max-width: 95%; /* Evitar que se salga en pantallas pequeñas */
+            max-width: 95%; 
+            border: 2px solid white; /* Borde blanco para resaltar el color */
         }
 
         /* Estilos compartidos para inputs del toolbar */
         .toolbar-input {
-            border: 2px solid #eee;
-            background: #f9f9f9;
+            border: 2px solid rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.9);
             padding: 10px 20px;
             border-radius: 30px;
             font-family: 'Fredoka', sans-serif;
             font-size: 1rem;
             color: #333;
             outline: none;
-            transition: border-color 0.3s, background 0.3s;
+            transition: transform 0.2s, background 0.3s;
             user-select: text; 
             white-space: nowrap;
             overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .toolbar-input:focus {
-            border-color: #FF4081;
             background: white;
+            transform: scale(1.02);
+            border-color: #fff;
         }
 
         /* Input del Nombre (Estándar) */
@@ -89,14 +93,13 @@
 
         /* Input del Título (Elástico con contenteditable) */
         #project-title {
-            min-width: 250px; /* Tamaño mínimo */
-            max-width: 500px; /* Máximo para que no rompa el diseño */
+            min-width: 250px; 
+            max-width: 500px; 
             font-weight: 600;
             cursor: text;
             display: inline-block;
         }
 
-        /* Placeholder simulado para el div contenteditable */
         #project-title:empty:before {
             content: attr(placeholder);
             color: #aaa;
@@ -115,7 +118,8 @@
             align-items: center;
             gap: 8px;
             white-space: nowrap;
-            flex-shrink: 0; /* Evitar que los botones se aplasten */
+            flex-shrink: 0; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .btn-main:active {
@@ -125,54 +129,61 @@
         #btn-add {
             background: linear-gradient(135deg, #FF4081, #F50057);
             color: white;
-            box-shadow: 0 4px 15px rgba(245, 0, 87, 0.4);
         }
 
         #btn-save {
             background: linear-gradient(135deg, #00E5FF, #00B0FF);
             color: white;
-            box-shadow: 0 4px 15px rgba(0, 176, 255, 0.4);
         }
 
-        /* --- EL TABLERO (LIENZO) --- */
+        /* --- EL TABLERO (GRID SYSTEM) --- */
         #board {
             width: 100%;
             height: 100%;
             position: relative;
             background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
             background-size: 30px 30px; 
-            overflow: auto; 
-            -webkit-overflow-scrolling: touch;
+            overflow-y: auto; /* Scroll vertical principal */
+            overflow-x: auto; /* Scroll horizontal si es necesario */
+            
+            /* AJUSTE 1: Grid CSS para orden automático */
+            display: grid;
+            /* 5 columnas de ancho fijo para mantener consistencia */
+            grid-template-columns: repeat(5, 240px); 
+            grid-auto-rows: 250px; /* Altura fija de fila */
+            gap: 25px; /* Espacio entre notas */
+            padding: 100px 50px 100px 50px; /* Padding superior para el toolbar */
+            justify-content: center; /* Centrar la grilla en pantalla */
+            align-content: start;
         }
 
         /* --- NOTAS (POST-ITS) --- */
         .note {
-            position: absolute;
-            width: 240px;  
-            height: 250px; 
+            /* Posición relativa al grid cell */
+            position: relative; 
+            width: 100%;  
+            height: 100%; 
             background-color: var(--color-yellow);
             border-radius: 16px; 
             box-shadow: var(--shadow-soft);
             padding: 10px 15px 15px 15px; 
             display: flex;
             flex-direction: column;
-            transition: box-shadow 0.2s, transform 0.2s;
-            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: grab; /* Manita abierta */
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             overflow: hidden; 
         }
 
-        .note:active {
+        /* Clase mientras se arrastra (Drag & Drop nativo) */
+        .note.sortable-dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+            border: 2px dashed #333;
             cursor: grabbing;
         }
 
-        .note.dragging {
-            box-shadow: var(--shadow-lift);
-            transform: scale(1.05) rotate(2deg);
-            z-index: 999 !important;
-        }
-
-        /* Header de la nota (Número de Escena y Checkbox) */
+        /* Header de la nota */
         .note-header {
             display: flex;
             justify-content: space-between; 
@@ -180,7 +191,6 @@
             margin-bottom: 6px;
         }
 
-        /* Checkbox de página doble */
         .page-toggle {
             font-size: 0.75rem;
             font-weight: 700;
@@ -206,7 +216,6 @@
             margin: 0;
         }
 
-        /* Badge de número de escena */
         .scene-badge {
             background: rgba(255,255,255,0.6);
             border-radius: 12px;
@@ -240,7 +249,6 @@
             margin: 0;
         }
 
-        /* --- ESTRUCTURA INTERNA DE LA NOTA --- */
         .note-body {
             flex-grow: 1;
             display: flex;
@@ -298,7 +306,6 @@
             font-family: 'Fredoka', sans-serif; 
         }
 
-        /* --- CONTROLES DE LA NOTA --- */
         .note-controls {
             display: flex;
             justify-content: space-between;
@@ -374,24 +381,22 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Responsive */
+        @media (max-width: 1300px) {
+            #board {
+                /* Si la pantalla es pequeña, bajar a menos columnas o dejar scroll horizontal */
+                /* Para este requerimiento, mantenemos 5 columnas pero permitimos scroll */
+                justify-content: flex-start; 
+            }
+        }
+
         @media (max-width: 800px) {
             #toolbar {
                 flex-wrap: wrap;
                 justify-content: center;
             }
-            #student-name {
-                width: 100%;
-                order: 1;
-            }
-            #project-title {
-                width: 100%;
-                order: 2;
-                max-width: 100%;
-            }
-            .btn-main {
-                order: 3;
-            }
+            #student-name { width: 100%; order: 1; }
+            #project-title { width: 100%; order: 2; max-width: 100%; }
+            .btn-main { order: 3; }
         }
 
     </style>
@@ -403,10 +408,10 @@
         <!-- Nombre del Estudiante -->
         <input type="text" id="student-name" class="toolbar-input" placeholder="Nombre: Estudiante" spellcheck="false">
 
-        <!-- Título del Proyecto (Elástico) -->
+        <!-- Título del Proyecto -->
         <span id="project-title" class="toolbar-input" contenteditable="true" placeholder="Título de tu Historia..." spellcheck="false"></span>
 
-        <button id="btn-add" class="btn-main" onclick="createNewRandomNote()">
+        <button id="btn-add" class="btn-main" onclick="createNewNote()">
             <i class="fa-solid fa-plus"></i> Nueva Nota
         </button>
         <button id="btn-save" class="btn-main" onclick="saveBoard()">
@@ -414,15 +419,14 @@
         </button>
     </div>
 
-    <!-- El Tablero -->
+    <!-- El Tablero (Grid) -->
     <div id="board"></div>
 
     <div id="toast">¡Storyboard guardado! 📸</div>
 
     <script>
         const board = document.getElementById('board');
-        let zIndexCounter = 10;
-
+        
         const colors = [
             { bg: '#FFEB3B', name: 'Amarillo Sol' },   
             { bg: '#FF4081', name: 'Fucsia Neón' },    
@@ -434,15 +438,6 @@
 
         window.onload = () => {
             const initialNotesCount = 20;
-            const columns = 5;
-            
-            const noteWidth = 240;
-            const noteHeight = 250; 
-            const gapX = 30; 
-            const gapY = 30; 
-            const startX = 50; 
-            const startY = 120; // Un poco más abajo por si el toolbar crece
-
             const sampleData = [
                 { scene: "Intro: Parque soleado", dialog: "¡Qué buen día!" },
                 { scene: "Aparece el villano", dialog: "¡Jajaja!" },
@@ -452,60 +447,37 @@
             ];
 
             for (let i = 0; i < initialNotesCount; i++) {
-                const col = i % columns;          
-                const row = Math.floor(i / columns);
-
-                const x = startX + (col * (noteWidth + gapX));
-                const y = startY + (row * (noteHeight + gapY));
-
                 const data = sampleData[i] || { scene: "", dialog: "" };
                 const colorIndex = i % colors.length;
-                
-                createNote(x, y, data.scene, data.dialog, colors[colorIndex].bg, i + 1);
+                // No enviamos coordenadas, el Grid se encarga
+                createNote(data.scene, data.dialog, colors[colorIndex].bg, i + 1);
             }
-
-            board.scrollTop = 0;
-            board.scrollLeft = 0;
         };
 
-        function createNewRandomNote() {
-            const columns = 5;
-            const noteWidth = 240;
-            const noteHeight = 250;
-            const gapX = 30; 
-            const gapY = 30; 
-            const startX = 50; 
-            const startY = 120;
-
+        function createNewNote() {
+            // Se añade al final automáticamente por el Grid
             const allNotes = document.querySelectorAll('.note');
             const count = allNotes.length;
-            
-            const col = count % columns;
-            const row = Math.floor(count / columns);
-
-            const x = startX + (col * (noteWidth + gapX));
-            const y = startY + (row * (noteHeight + gapY));
-            
             const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
             
-            createNote(x, y, "", "", randomColor, count + 1);
+            createNote("", "", randomColor, count + 1);
             
+            // Scroll al final
             setTimeout(() => {
                 const newNote = board.lastElementChild;
                 if(newNote) {
-                    newNote.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    newNote.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 100);
         }
 
-        function createNote(x, y, sceneText, dialogText, colorCode, sceneNum) {
+        function createNote(sceneText, dialogText, colorCode, sceneNum) {
             const note = document.createElement('div');
             note.className = 'note';
-            
-            note.style.left = `${x}px`;
-            note.style.top = `${y}px`;
-            note.style.zIndex = zIndexCounter++;
             note.style.backgroundColor = colorCode;
+            
+            // Habilitar Drag & Drop nativo
+            note.setAttribute('draggable', 'true');
 
             note.innerHTML = `
                 <div class="note-header">
@@ -519,10 +491,10 @@
 
                 <div class="note-body">
                     <div class="field-label"><i class="fa-solid fa-video"></i> Descripción de escena</div>
-                    <div class="editable-area scene-input" contenteditable="true" placeholder="Describe el lugar o la acción...">${sceneText}</div>
+                    <div class="editable-area scene-input" contenteditable="true" placeholder="Describe el lugar...">${sceneText}</div>
                     
                     <div class="field-label" style="margin-top: 8px;"><i class="fa-solid fa-comments"></i> Diálogo</div>
-                    <div class="editable-area dialogue-input" contenteditable="true" placeholder="¿Qué dicen los personajes?">${dialogText}</div>
+                    <div class="editable-area dialogue-input" contenteditable="true" placeholder="¿Qué dicen?">${dialogText}</div>
                 </div>
 
                 <div class="note-controls">
@@ -535,12 +507,82 @@
                 </div>
             `;
 
-            note.addEventListener('mousedown', startDrag);
-            note.addEventListener('touchstart', startDrag, { passive: false });
-            note.addEventListener('mousedown', () => bringToFront(note));
+            // EVENTOS DE DRAG & DROP PARA REORDENAR (SORTABLE)
+            note.addEventListener('dragstart', handleDragStart);
+            note.addEventListener('dragend', handleDragEnd);
             
+            // Eventos para evitar arrastrar si se escribe
+            const inputs = note.querySelectorAll('.editable-area, input');
+            inputs.forEach(input => {
+                input.addEventListener('mousedown', (e) => {
+                    // Si clicamos en input, desactivamos draggable temporalmente
+                    note.setAttribute('draggable', 'false');
+                    e.stopPropagation();
+                });
+                // Reactivamos draggable al salir o soltar
+                input.addEventListener('mouseup', () => note.setAttribute('draggable', 'true'));
+                input.addEventListener('mouseleave', () => note.setAttribute('draggable', 'true'));
+            });
+
             board.appendChild(note);
         }
+
+        // --- SISTEMA DE REORDENAMIENTO (Drag & Drop Logic) ---
+        
+        function handleDragStart(e) {
+            e.dataTransfer.effectAllowed = 'move';
+            e.target.classList.add('sortable-dragging');
+            // Hack para que la imagen fantasma no incluya el borde discontinuo
+            setTimeout(() => e.target.style.opacity = '0.5', 0);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('sortable-dragging');
+            e.target.style.opacity = '1';
+            // Restaurar cualquier draggable
+            const allNotes = document.querySelectorAll('.note');
+            allNotes.forEach(n => n.setAttribute('draggable', 'true'));
+        }
+
+        // Evento principal en el contenedor Grid
+        board.addEventListener('dragover', (e) => {
+            e.preventDefault(); // Permitir drop
+            
+            const draggingItem = document.querySelector('.sortable-dragging');
+            if(!draggingItem) return;
+
+            // Encontrar la nota sobre la que estamos pasando
+            const siblings = [...board.querySelectorAll('.note:not(.sortable-dragging)')];
+            const nextSibling = siblings.find(sibling => {
+                // Lógica geométrica simple para Grid: 
+                // Buscamos el primer elemento cuyo centro esté DESPUÉS del cursor
+                const rect = sibling.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // Si estamos en la misma fila (aprox), miramos X, si no, miramos Y
+                // Para grid flow standard, simplificamos:
+                // Si el cursor está a la izquierda Y arriba del centro del elemento...
+                // Pero para Grid, el orden de DOM define la posición.
+                // Simplemente verificamos si el mouse está antes del centro del elemento en el orden de lectura.
+                
+                // Una aproximación robusta para Grids mixtos:
+                // Si el mouse está "antes" visualmente del elemento.
+                // En un grid LTR, "antes" significa (arriba) O (misma linea y a la izquierda).
+                
+                if (e.clientY < rect.top) return true; // cursor mas arriba
+                if (e.clientY > rect.bottom) return false; // cursor mas abajo
+                
+                // Estamos en la fila visual del elemento, miramos horizontal
+                return e.clientX < centerX;
+            });
+
+            // Insertar antes del siguiente elemento, o al final si no hay siguiente
+            board.insertBefore(draggingItem, nextSibling);
+        });
+
+
+        // --- UTILIDADES ---
 
         function deleteNote(btn) {
             const note = btn.closest('.note');
@@ -553,98 +595,30 @@
             note.style.backgroundColor = color;
         }
 
-        function bringToFront(note) {
-            zIndexCounter++;
-            note.style.zIndex = zIndexCounter;
-        }
-
-        let activeNote = null;
-        let startX, startY, initialLeft, initialTop;
-
-        function startDrag(e) {
-            if (e.target.closest('.note-controls') || 
-                e.target.isContentEditable || 
-                e.target.tagName === 'INPUT' || 
-                e.target.closest('.page-toggle')) { 
-                return;
-            }
-
-            activeNote = e.currentTarget;
-            activeNote.classList.add('dragging');
-            bringToFront(activeNote);
-
-            const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-
-            startX = clientX;
-            startY = clientY;
-            
-            initialLeft = activeNote.offsetLeft;
-            initialTop = activeNote.offsetTop;
-
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchmove', drag, { passive: false });
-            document.addEventListener('touchend', stopDrag);
-        }
-
-        function drag(e) {
-            if (!activeNote) return;
-            e.preventDefault(); 
-
-            const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-
-            const dx = clientX - startX;
-            const dy = clientY - startY;
-
-            activeNote.style.left = `${initialLeft + dx}px`;
-            activeNote.style.top = `${initialTop + dy}px`;
-        }
-
-        function stopDrag() {
-            if (activeNote) {
-                activeNote.classList.remove('dragging');
-                activeNote = null;
-            }
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('mouseup', stopDrag);
-            document.removeEventListener('touchmove', drag);
-            document.removeEventListener('touchend', stopDrag);
-        }
-
         function saveBoard() {
             const toolbar = document.getElementById('toolbar');
             const btnAdd = document.getElementById('btn-add');
             const btnSave = document.getElementById('btn-save');
             
-            // Ocultar botones, pero mantener los inputs visibles
             btnAdd.style.display = 'none';
             btnSave.style.display = 'none';
             
-            // Estilizar el toolbar para que parezca parte del lienzo
-            toolbar.style.boxShadow = 'none'; 
-            toolbar.style.background = 'transparent'; 
+            // Quitar estilos del toolbar para la foto para que se vea limpio
+            const oldBackground = toolbar.style.background;
+            const oldBoxShadow = toolbar.style.boxShadow;
+            const oldBorder = toolbar.style.border;
             
-            const originalToolbarStyle = toolbar.style.cssText;
+            toolbar.style.background = 'transparent';
+            toolbar.style.boxShadow = 'none';
+            toolbar.style.border = 'none';
             toolbar.style.position = 'absolute';
             toolbar.style.width = '100%';
             toolbar.style.justifyContent = 'center';
             toolbar.style.top = '20px';
 
-            let maxX = 0;
-            let maxY = 0;
-            const notes = document.querySelectorAll('.note');
-            
-            notes.forEach(note => {
-                const right = note.offsetLeft + note.offsetWidth;
-                const bottom = note.offsetTop + note.offsetHeight;
-                if (right > maxX) maxX = right;
-                if (bottom > maxY) maxY = bottom;
-            });
-
-            const targetWidth = Math.max(board.scrollWidth, maxX + 50);
-            const targetHeight = Math.max(board.scrollHeight, maxY + 50);
+            // Calcular tamaño necesario para capturar todo el scroll
+            const targetWidth = board.scrollWidth;
+            const targetHeight = board.scrollHeight;
 
             html2canvas(document.body, { 
                 backgroundColor: '#f0f4f8',
@@ -664,14 +638,21 @@
                 // Restaurar
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
+                toolbar.style.background = oldBackground;
+                toolbar.style.boxShadow = oldBoxShadow;
+                toolbar.style.border = oldBorder;
                 toolbar.style.cssText = ''; 
                 toolbar.style.display = 'flex'; 
                 
                 showToast();
             }).catch(err => {
                 console.error("Error al guardar:", err);
+                // Restaurar en caso de error
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
+                toolbar.style.background = '';
+                toolbar.style.boxShadow = '';
+                toolbar.style.border = '';
                 toolbar.style.cssText = '';
                 toolbar.style.display = 'flex';
                 alert("Hubo un problema al guardar la foto.");
