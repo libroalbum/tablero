@@ -21,17 +21,14 @@
 
     <style>
         :root {
-            /* Paleta de Colores del Tablero */
+            /* Paleta de Colores */
             --bg-board: #f0f4f8;
             --dot-color: #d1d9e6;
             --shadow-soft: 0 4px 6px rgba(0,0,0,0.15);
-            --shadow-lift: 0 15px 30px rgba(0,0,0,0.3);
             --color-yellow: #FFEA00;
-
-            /* Paleta de Colores de la Bienvenida y Guías */
-            --accent-color: #5d4037; /* Marrón */
-            --gold-color: #d4af37;   /* Dorado */
-            --endpaper-bg: #a5d6a7;  /* Verde suave */
+            --accent-color: #5d4037; 
+            --gold-color: #d4af37;   
+            --endpaper-bg: #a5d6a7; 
         }
 
         * {
@@ -53,27 +50,17 @@
         /* --- ESTILOS DE LA PANTALLA DE BIENVENIDA --- */
         .intro-overlay {
             position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8);
             z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             backdrop-filter: blur(5px);
             transition: opacity 0.5s ease;
         }
 
         .intro-modal {
-            background: #fff;
-            width: 90%; 
-            max-width: 500px;
-            padding: 40px 30px;
-            border-radius: 20px;
-            text-align: center;
-            position: relative;
+            background: #fff; width: 90%; max-width: 500px; padding: 40px 30px;
+            border-radius: 20px; text-align: center; position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             animation: popInModal 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 4px solid var(--gold-color);
@@ -81,67 +68,28 @@
         }
 
         .intro-character-circle {
-            width: 150px; 
-            height: 150px;
-            background: var(--endpaper-bg);
-            border-radius: 50%;
-            margin: -80px auto 20px auto;
-            border: 5px solid #fff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: center;
+            width: 150px; height: 150px; background: var(--endpaper-bg); border-radius: 50%;
+            margin: -80px auto 20px auto; border: 5px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden;
+            display: flex; align-items: flex-end; justify-content: center;
         }
 
-        .intro-character-img {
-            width: 80%; 
-            height: auto;
-        }
+        .intro-character-img { width: 80%; height: auto; }
 
-        .intro-title {
-            font-family: 'Cinzel', serif; 
-            color: var(--accent-color);
-            font-size: 1.5rem; 
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .intro-text {
-            font-family: 'Lato', sans-serif; 
-            color: #555;
-            font-size: 1rem; 
-            line-height: 1.6; 
-            margin-bottom: 25px;
-            font-weight: 400;
-        }
-        
+        .intro-title { font-family: 'Cinzel', serif; color: var(--accent-color); font-size: 1.5rem; margin-bottom: 15px; font-weight: 700; }
+        .intro-text { font-family: 'Lato', sans-serif; color: #555; font-size: 1rem; line-height: 1.6; margin-bottom: 25px; font-weight: 400; }
         .intro-text strong { color: var(--accent-color); }
 
         .close-intro-btn {
-            position: absolute; 
-            top: 15px; 
-            right: 15px;
-            background: transparent; 
-            border: none;
-            font-size: 1.5rem; 
-            color: #999; 
-            cursor: pointer;
-            transition: 0.3s;
+            position: absolute; top: 15px; right: 15px; background: transparent; border: none;
+            font-size: 1.5rem; color: #999; cursor: pointer; transition: 0.3s;
         }
         .close-intro-btn:hover { color: var(--accent-color); transform: rotate(90deg); }
 
         .action-btn {
-            background: var(--accent-color); 
-            color: #fff;
-            border: none; 
-            padding: 12px 30px;
-            font-family: 'Cinzel', serif; 
-            font-size: 1rem;
-            border-radius: 30px; 
-            cursor: pointer;
-            transition: 0.3s; 
-            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.3);
+            background: var(--accent-color); color: #fff; border: none; padding: 12px 30px;
+            font-family: 'Cinzel', serif; font-size: 1rem; border-radius: 30px; cursor: pointer;
+            transition: 0.3s; box-shadow: 0 5px 15px rgba(93, 64, 55, 0.3);
         }
         .action-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(93, 64, 55, 0.4); background: var(--gold-color); }
 
@@ -150,140 +98,99 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* --- ESTILOS DE LAS BURBUJAS GUÍA (AJUSTADO: Sin personaje, flecha arriba) --- */
+        /* --- ESTILOS DE GUÍAS (Highlighter) --- */
         #guide-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.0); /* Transparente pero bloquea clics */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); /* Oscurecer fondo */
+            backdrop-filter: blur(4px); 
+            -webkit-backdrop-filter: blur(4px);
             z-index: 9990; 
             display: none; 
             pointer-events: auto; 
         }
 
-        /* Contenedor flotante */
+        /* CLASE PARA RESALTAR ELEMENTOS (Efecto Foco) */
+        .highlight-active {
+            z-index: 9995 !important; /* Encima del overlay */
+            position: relative; /* Necesario para z-index */
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 0 20px rgba(0,0,0,0.5) !important;
+            transition: all 0.3s ease;
+            background-color: white; /* Asegurar fondo opaco en botones */
+            border-radius: inherit; /* Heredar bordes redondeados */
+        }
+        
+        /* Ajuste específico para resaltar notas que ya tienen color de fondo */
+        .note.highlight-active {
+            background-color: var(--color-yellow); /* Mantener su color */
+        }
+        
+        /* Ajuste para cuando se resalta el Toolbar (padre de los botones) */
+        #toolbar.highlight-parent {
+            z-index: 9995 !important;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%) !important; 
+        }
+
+        /* Burbuja Guía */
         .ped-label-container {
-            width: 280px;
-            display: flex;
-            flex-direction: column;
-            position: absolute; 
-            align-items: center; /* Centrado para que la flecha quede bien */
-            text-align: left;
-            z-index: 9995;
-            transition: top 0.5s ease, left 0.5s ease;
-            pointer-events: auto; 
+            width: 280px; display: flex; flex-direction: column; position: absolute; 
+            align-items: center; text-align: left; z-index: 9998; /* Encima del elemento resaltado */
+            transition: top 0.5s ease, left 0.5s ease; pointer-events: auto; 
         }
 
         .ped-cloud {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-            border: 1px solid #eee;
-            position: relative;
-            width: 100%;
-            margin-bottom: 0; /* Ya no hay personaje abajo */
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            background-color: #fff; padding: 20px; border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25); border: 1px solid #eee;
+            position: relative; width: 100%; margin-bottom: 0; opacity: 0;
+            transform: translateY(10px); transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* Triangulito (Flecha) APUNTANDO ARRIBA */
         .ped-cloud::after {
-            content: ''; 
-            position: absolute; 
-            bottom: 100%; /* Ubicado encima de la burbuja */
-            left: 50%; /* Centrado */
-            transform: translateX(-50%);
-            border-width: 0 10px 10px 10px; /* Triángulo apuntando arriba */
-            border-style: solid; 
+            content: ''; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+            border-width: 0 10px 10px 10px; border-style: solid; 
             border-color: transparent transparent #fff transparent;
         }
 
         .ped-cloud h3 {
-            font-family: 'Cinzel', serif; 
-            color: var(--accent-color); 
-            font-size: 1rem;
-            margin: 0 0 8px 0; 
-            border-bottom: 2px solid var(--gold-color); 
-            display: inline-block; 
-            padding-bottom: 3px;
-            font-weight: 700;
+            font-family: 'Cinzel', serif; color: var(--accent-color); font-size: 1rem;
+            margin: 0 0 8px 0; border-bottom: 2px solid var(--gold-color); 
+            display: inline-block; padding-bottom: 3px; font-weight: 700;
         }
 
-        .ped-cloud p { 
-            font-family: 'Lato', sans-serif; 
-            font-size: 0.9rem; 
-            color: #666; 
-            line-height: 1.5; 
-            margin: 0;
-        }
+        .ped-cloud p { font-family: 'Lato', sans-serif; font-size: 0.9rem; color: #666; line-height: 1.5; margin: 0; }
 
         .close-guide-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            border: none;
-            background: transparent;
-            color: #999;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: color 0.3s;
+            position: absolute; top: 10px; right: 10px; border: none; background: transparent;
+            color: #999; cursor: pointer; font-size: 1.1rem; transition: color 0.3s;
         }
         .close-guide-btn:hover { color: var(--accent-color); }
 
         .ped-cloud.active { opacity: 1; transform: translateY(0); }
 
-        /* --- ESTILOS DEL TABLERO (EXISTENTES) --- */
+        /* --- ESTILOS DEL TABLERO --- */
         #app-container {
-            min-height: 100vh;
-            width: 100%;
+            min-height: 100vh; width: 100%;
             background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
-            background-size: 30px 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 30px;
-            padding-bottom: 100px;
+            background-size: 30px 30px; display: flex; flex-direction: column;
+            align-items: center; padding-top: 30px; padding-bottom: 100px;
         }
 
         #toolbar {
-            position: relative; 
-            margin-bottom: 30px;
+            position: relative; margin-bottom: 30px;
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-            padding: 10px 20px;
-            border-radius: 50px;
+            padding: 10px 20px; border-radius: 50px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            display: flex;
-            gap: 12px;
-            z-index: 2000;
-            align-items: center;
-            width: fit-content;
-            max-width: 95%;
-            border: 2px solid white; 
-            flex-wrap: nowrap; 
-            justify-content: center;
-            overflow: hidden;
+            display: flex; gap: 12px; z-index: 2000; align-items: center;
+            width: fit-content; max-width: 95%; border: 2px solid white; 
+            flex-wrap: nowrap; justify-content: center; overflow: hidden;
         }
 
         .toolbar-input {
-            border: 2px solid rgba(255,255,255,0.8);
-            background: rgba(255,255,255,0.9);
-            padding: 10px 15px;
-            border-radius: 30px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
-            color: #333;
-            outline: none;
-            transition: transform 0.2s, background 0.3s;
-            user-select: text; 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: inline-block;
-            cursor: text;
+            border: 2px solid rgba(255,255,255,0.8); background: rgba(255,255,255,0.9);
+            padding: 10px 15px; border-radius: 30px; font-family: 'Fredoka', sans-serif;
+            font-size: 1rem; color: #333; outline: none; transition: transform 0.2s, background 0.3s;
+            user-select: text; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: inline-block; cursor: text;
         }
-
         .toolbar-input:focus { background: white; transform: scale(1.02); border-color: #fff; }
         .toolbar-input:empty:before { content: attr(placeholder); color: #aaa; }
 
@@ -291,20 +198,11 @@
         #project-title { min-width: 150px; max-width: 500px; flex: 2 1 auto; font-weight: 600; }
 
         .btn-main {
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-family: 'Fredoka', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: none; padding: 10px 20px; border-radius: 30px;
+            font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 0.95rem;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; align-items: center; gap: 8px; white-space: nowrap;
+            flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .btn-main:active { transform: scale(0.95); }
 
@@ -312,15 +210,9 @@
         #btn-save { background: linear-gradient(135deg, #00E5FF, #00B0FF); color: white; }
 
         #board {
-            width: 100%;
-            position: relative;
-            display: grid;
-            grid-template-columns: repeat(5, 240px); 
-            grid-auto-rows: 250px; 
-            gap: 25px; 
-            justify-content: center; 
-            align-content: start;
-            padding: 0 20px;
+            width: 100%; position: relative; display: grid;
+            grid-template-columns: repeat(5, 240px); grid-auto-rows: 250px; 
+            gap: 25px; justify-content: center; align-content: start; padding: 0 20px;
         }
 
         @media (max-width: 1350px) { #board { grid-template-columns: repeat(4, 240px); } }
@@ -337,27 +229,17 @@
             #student-name { width: 100%; max-width: 100%; order: 1; text-align: center; }
             #project-title { width: 100%; max-width: 100%; order: 2; text-align: center; }
             .btn-main { order: 3; flex-grow: 1; justify-content: center; }
-            
-            /* Ajuste de la guía para móvil */
             .ped-label-container { width: 220px; }
         }
 
         .note {
-            position: relative; 
-            width: 100%;  
-            height: 100%; 
-            background-color: var(--color-yellow);
-            border-radius: 16px; 
-            box-shadow: var(--shadow-soft);
-            padding: 10px 15px 15px 15px; 
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: grab; 
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; width: 100%; height: 100%;
+            background-color: var(--color-yellow); border-radius: 16px; 
+            box-shadow: var(--shadow-soft); padding: 10px 15px 15px 15px; 
+            display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;
+            cursor: grab; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             overflow: hidden; 
         }
-
         .note.sortable-dragging { opacity: 0.5; transform: scale(0.95); border: 2px dashed #333; cursor: grabbing; }
 
         .note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
@@ -373,29 +255,36 @@
             background: rgba(255,255,255,0.6); border-radius: 12px; padding: 2px 8px; font-size: 0.8rem; font-weight: 700; color: #444;
             display: flex; align-items: center; gap: 5px; cursor: help; 
         }
-
         .scene-number-input {
             width: 30px; border: none; background: transparent; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 0.9rem;
             color: #222; text-align: center; outline: none; cursor: text; user-select: text;
         }
         .scene-number-input::-webkit-outer-spin-button, .scene-number-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        .note-body { flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; scrollbar-width: thin; padding-right: 2px; }
-        .note-body::-webkit-scrollbar { width: 4px; }
-        .note-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        .note-body { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; /* Evitar desborde del contenedor principal */ }
 
-        .field-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: rgba(0,0,0,0.6); margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+        .field-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: rgba(0,0,0,0.6); margin-bottom: 1px; display: flex; align-items: center; gap: 5px; }
 
+        /* AJUSTE TEXTO: Más pequeño y contenido dentro de la caja con scroll */
         .editable-area {
-            width: 100%; background: rgba(255,255,255,0.4); border-radius: 8px; padding: 8px; font-size: 0.9rem; line-height: 1.3;
-            color: #222; font-weight: 500; outline: none; border: 1px solid transparent; user-select: text; cursor: text; min-height: 40px; white-space: pre-wrap;
+            width: 100%; background: rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 8px; 
+            font-size: 0.85rem; /* Letra más pequeña */
+            line-height: 1.25; color: #222; font-weight: 500; outline: none; 
+            border: 1px solid transparent; user-select: text; cursor: text; 
+            min-height: 40px; flex-grow: 1; /* Ocupar espacio disponible */
+            white-space: pre-wrap; word-wrap: break-word; word-break: break-word; /* Romper palabras largas */
+            overflow-y: auto; /* Scroll interno si es necesario */
+            scrollbar-width: thin;
         }
+        .editable-area::-webkit-scrollbar { width: 4px; }
+        .editable-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        
         .editable-area:focus { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.1); }
         .editable-area:empty:before { content: attr(placeholder); color: rgba(0,0,0,0.3); font-style: italic; font-weight: 400; }
 
         .dialogue-input { font-family: 'Fredoka', sans-serif; }
 
-        .note-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
+        .note-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
         .note:hover .note-controls, .note:focus-within .note-controls, .note.active .note-controls { opacity: 1; }
 
         .color-picker { display: flex; gap: 4px; }
@@ -438,7 +327,7 @@
         </div>
     </div>
 
-    <!-- CAPA DE GUÍAS INTERACTIVAS (Sin personaje) -->
+    <!-- CAPA DE GUÍAS INTERACTIVAS -->
     <div id="guide-overlay">
         <div id="guide-container" class="ped-label-container">
             <div id="guide-cloud" class="ped-cloud">
@@ -470,40 +359,49 @@
         // --- LÓGICA DE LA GUÍA INTERACTIVA ---
         let currentGuideStep = 0;
         
-        // Datos de los pasos de la guía
         const guideSteps = [
             {
                 targetId: 'btn-add',
                 title: 'Nueva Nota',
-                text: 'Usa este botón para agregar una nueva nota a tu tablero cuando tengas una nueva idea.'
+                text: 'Usa este botón para agregar una nueva nota a tu tablero cuando tengas una nueva idea.',
+                parentHighlight: true // Resaltar toolbar
+            },
+            {
+                targetSelector: '.note', 
+                title: 'Organiza y Edita',
+                text: '¡Personaliza tu tablero! Arrastra las notas para cambiar su orden e intercambiarlas. Además, puedes editar todo el contenido: la descripción, los diálogos e incluso el número de escena.',
+                highlightClass: 'note' // Resaltar nota completa
             },
             {
                 targetSelector: '.page-toggle', 
                 title: 'Doble Página',
-                text: 'Marca esta casilla si tu escena ocupará una doble página en el libro álbum.'
+                text: 'Marca esta casilla si tu escena ocupará una doble página en el libro álbum.',
+                highlightClass: 'note' // Resaltar nota completa (contexto)
             },
             {
                 targetId: 'btn-save',
                 title: 'Capturar Tablero',
-                text: 'Al finalizar, haz clic aquí. Se tomará una captura de tu tablero que se descargará en tu computador. ¡Recuerda enviársela a tu profesor!'
+                text: 'Al finalizar, haz clic aquí. Se tomará una captura de tu tablero que se descargará en tu computador. ¡Recuerda enviársela a tu profesor!',
+                parentHighlight: true
             }
         ];
 
         function startGuide() {
-            // Cierra el modal de bienvenida
             const intro = document.getElementById('introOverlay');
             intro.style.opacity = '0';
             setTimeout(() => {
                 intro.style.display = 'none';
-                // Inicia la guía
                 document.getElementById('guide-overlay').style.display = 'block';
                 showGuideStep(0);
             }, 500);
         }
 
         function showGuideStep(index) {
+            // Limpiar resaltados previos
+            document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));
+            document.getElementById('toolbar').classList.remove('highlight-parent');
+
             if (index >= guideSteps.length) {
-                // Fin de la guía
                 endGuide();
                 return;
             }
@@ -518,24 +416,32 @@
             }
 
             if (!targetEl) {
-                // Si no encuentra el elemento (raro), salta al siguiente
                 nextGuideStep();
                 return;
             }
 
-            // Actualizar textos
+            // Aplicar Resaltado (Highlight)
+            if (step.parentHighlight) {
+                // Si es un botón del toolbar, resaltamos el botón
+                targetEl.classList.add('highlight-active');
+                // Y nos aseguramos que el toolbar esté encima del overlay
+                document.getElementById('toolbar').classList.add('highlight-parent');
+            } else if (step.highlightClass === 'note') {
+                // Si es algo dentro de la nota, resaltamos la nota entera (si target es hijo)
+                const note = targetEl.closest('.note');
+                if(note) note.classList.add('highlight-active');
+                else targetEl.classList.add('highlight-active');
+            } else {
+                targetEl.classList.add('highlight-active');
+            }
+
             document.getElementById('guide-title').innerText = step.title;
             document.getElementById('guide-text').innerText = step.text;
 
-            // Posicionar la burbuja debajo del elemento
             positionGuide(targetEl);
 
-            // Activar animaciones
             const cloud = document.getElementById('guide-cloud');
-            
-            // Resetear clases para reiniciar animación
             cloud.classList.remove('active');
-            
             setTimeout(() => {
                 cloud.classList.add('active');
             }, 50);
@@ -543,15 +449,16 @@
 
         function positionGuide(targetElement) {
             const container = document.getElementById('guide-container');
+            
+            // Si resaltamos la nota completa, usamos la nota para posicionar
+            if (targetElement.closest('.note') && guideSteps[currentGuideStep].highlightClass === 'note') {
+                targetElement = targetElement.closest('.note');
+            }
+
             const rect = targetElement.getBoundingClientRect();
-            
-            // Posicionar DEBAJO del elemento
             let top = rect.bottom + 15; 
-            
-            // Centrar horizontalmente respecto al elemento (280px es el ancho del container)
             let left = rect.left + (rect.width / 2) - 140; 
 
-            // Correcciones de bordes
             if (left < 10) left = 10;
             if (left + 280 > window.innerWidth) left = window.innerWidth - 290;
 
@@ -565,6 +472,10 @@
         }
 
         function endGuide() {
+            // Limpiar todo al final
+            document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));
+            document.getElementById('toolbar').classList.remove('highlight-parent');
+            
             const overlay = document.getElementById('guide-overlay');
             overlay.style.opacity = '0';
             setTimeout(() => {
@@ -573,7 +484,7 @@
             }, 500);
         }
 
-        // --- LÓGICA DEL TABLERO (EXISTENTE) ---
+        // --- LÓGICA DEL TABLERO ---
         const board = document.getElementById('board');
         const appContainer = document.getElementById('app-container');
         
