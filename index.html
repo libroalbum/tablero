@@ -50,35 +50,56 @@
             left: 50%;
             transform: translateX(-50%);
             background: white;
-            padding: 8px 15px;
+            padding: 8px 20px;
             border-radius: 50px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             display: flex;
-            gap: 15px;
+            gap: 12px;
             z-index: 2000;
             align-items: center;
+            max-width: 95%; /* Evitar que se salga en pantallas pequeñas */
         }
 
-        /* Input del Título del Proyecto */
-        #project-title {
+        /* Estilos compartidos para inputs del toolbar */
+        .toolbar-input {
             border: 2px solid #eee;
             background: #f9f9f9;
             padding: 10px 20px;
             border-radius: 30px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1rem;
             color: #333;
             outline: none;
-            width: 250px;
-            text-align: center;
-            transition: border-color 0.3s;
-            user-select: text; /* Permitir escribir */
+            transition: border-color 0.3s, background 0.3s;
+            user-select: text; 
+            white-space: nowrap;
+            overflow: hidden;
         }
 
-        #project-title:focus {
+        .toolbar-input:focus {
             border-color: #FF4081;
             background: white;
+        }
+
+        /* Input del Nombre (Estándar) */
+        #student-name {
+            width: 180px;
+            font-weight: 500;
+        }
+
+        /* Input del Título (Elástico con contenteditable) */
+        #project-title {
+            min-width: 250px; /* Tamaño mínimo */
+            max-width: 500px; /* Máximo para que no rompa el diseño */
+            font-weight: 600;
+            cursor: text;
+            display: inline-block;
+        }
+
+        /* Placeholder simulado para el div contenteditable */
+        #project-title:empty:before {
+            content: attr(placeholder);
+            color: #aaa;
         }
 
         .btn-main {
@@ -94,6 +115,7 @@
             align-items: center;
             gap: 8px;
             white-space: nowrap;
+            flex-shrink: 0; /* Evitar que los botones se aplasten */
         }
 
         .btn-main:active {
@@ -127,11 +149,11 @@
         .note {
             position: absolute;
             width: 240px;  
-            height: 250px; /* Ligeramente más alto para el número */
+            height: 250px; 
             background-color: var(--color-yellow);
             border-radius: 16px; 
             box-shadow: var(--shadow-soft);
-            padding: 12px 15px 15px 15px;
+            padding: 10px 15px 15px 15px; 
             display: flex;
             flex-direction: column;
             transition: box-shadow 0.2s, transform 0.2s;
@@ -150,14 +172,41 @@
             z-index: 999 !important;
         }
 
-        /* Header de la nota (Número de Escena) */
+        /* Header de la nota (Número de Escena y Checkbox) */
         .note-header {
             display: flex;
-            justify-content: flex-end; /* A la derecha */
+            justify-content: space-between; 
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
+        /* Checkbox de página doble */
+        .page-toggle {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.4);
+            padding: 2px 6px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .page-toggle:hover {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .page-toggle input {
+            cursor: pointer;
+            width: 12px;
+            height: 12px;
+            margin: 0;
+        }
+
+        /* Badge de número de escena */
         .scene-badge {
             background: rgba(255,255,255,0.6);
             border-radius: 12px;
@@ -168,6 +217,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            cursor: help; 
         }
 
         .scene-number-input {
@@ -184,7 +234,6 @@
             user-select: text;
         }
         
-        /* Ocultar flechas del input number */
         .scene-number-input::-webkit-outer-spin-button,
         .scene-number-input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -202,7 +251,6 @@
             padding-right: 2px;
         }
         
-        /* Personalización Scrollbar interno */
         .note-body::-webkit-scrollbar { width: 4px; }
         .note-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
 
@@ -217,7 +265,6 @@
             gap: 5px;
         }
 
-        /* Áreas de texto editables */
         .editable-area {
             width: 100%;
             background: rgba(255,255,255,0.4);
@@ -240,7 +287,6 @@
             border-color: rgba(0,0,0,0.1);
         }
 
-        /* Placeholder simulado con CSS */
         .editable-area:empty:before {
             content: attr(placeholder);
             color: rgba(0,0,0,0.3);
@@ -306,13 +352,11 @@
             background: rgba(255, 82, 82, 0.3);
         }
 
-        /* --- ANIMACIONES --- */
         @keyframes popIn {
             from { transform: scale(0) rotate(-10deg); opacity: 0; }
             to { transform: scale(1) rotate(0); opacity: 1; }
         }
 
-        /* Toast */
         #toast {
             position: fixed;
             bottom: 30px;
@@ -330,16 +374,23 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        /* Media Query para pantallas pequeñas (Toolbar) */
-        @media (max-width: 600px) {
+        /* Responsive */
+        @media (max-width: 800px) {
             #toolbar {
-                width: 90%;
                 flex-wrap: wrap;
                 justify-content: center;
             }
+            #student-name {
+                width: 100%;
+                order: 1;
+            }
             #project-title {
                 width: 100%;
-                margin-bottom: 5px;
+                order: 2;
+                max-width: 100%;
+            }
+            .btn-main {
+                order: 3;
             }
         }
 
@@ -349,8 +400,11 @@
 
     <!-- Barra de Herramientas -->
     <div id="toolbar">
-        <!-- Título del Proyecto -->
-        <input type="text" id="project-title" placeholder="Título de tu Historia..." spellcheck="false">
+        <!-- Nombre del Estudiante -->
+        <input type="text" id="student-name" class="toolbar-input" placeholder="Nombre: Estudiante" spellcheck="false">
+
+        <!-- Título del Proyecto (Elástico) -->
+        <span id="project-title" class="toolbar-input" contenteditable="true" placeholder="Título de tu Historia..." spellcheck="false"></span>
 
         <button id="btn-add" class="btn-main" onclick="createNewRandomNote()">
             <i class="fa-solid fa-plus"></i> Nueva Nota
@@ -361,9 +415,7 @@
     </div>
 
     <!-- El Tablero -->
-    <div id="board">
-        <!-- Las notas se generarán aquí -->
-    </div>
+    <div id="board"></div>
 
     <div id="toast">¡Storyboard guardado! 📸</div>
 
@@ -371,7 +423,6 @@
         const board = document.getElementById('board');
         let zIndexCounter = 10;
 
-        // Paleta de colores VÍVIDOS
         const colors = [
             { bg: '#FFEB3B', name: 'Amarillo Sol' },   
             { bg: '#FF4081', name: 'Fucsia Neón' },    
@@ -381,18 +432,16 @@
             { bg: '#FF9100', name: 'Naranja Fuego' }   
         ];
 
-        // --- INICIO: Generar 20 notas en CUADRÍCULA 5x4 ---
         window.onload = () => {
             const initialNotesCount = 20;
             const columns = 5;
             
-            // Configuración
             const noteWidth = 240;
-            const noteHeight = 250; // Ajustado a la nueva altura
+            const noteHeight = 250; 
             const gapX = 30; 
             const gapY = 30; 
             const startX = 50; 
-            const startY = 100;
+            const startY = 120; // Un poco más abajo por si el toolbar crece
 
             const sampleData = [
                 { scene: "Intro: Parque soleado", dialog: "¡Qué buen día!" },
@@ -412,7 +461,6 @@
                 const data = sampleData[i] || { scene: "", dialog: "" };
                 const colorIndex = i % colors.length;
                 
-                // Pasamos (i + 1) como número de escena inicial
                 createNote(x, y, data.scene, data.dialog, colors[colorIndex].bg, i + 1);
             }
 
@@ -420,7 +468,6 @@
             board.scrollLeft = 0;
         };
 
-        // --- Agregar nota en orden de cuadrícula ---
         function createNewRandomNote() {
             const columns = 5;
             const noteWidth = 240;
@@ -428,13 +475,11 @@
             const gapX = 30; 
             const gapY = 30; 
             const startX = 50; 
-            const startY = 100;
+            const startY = 120;
 
-            // Contar notas para posición y número de escena
             const allNotes = document.querySelectorAll('.note');
             const count = allNotes.length;
             
-            // Calcular columna y fila
             const col = count % columns;
             const row = Math.floor(count / columns);
 
@@ -443,7 +488,6 @@
             
             const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
             
-            // El número de escena será count + 1
             createNote(x, y, "", "", randomColor, count + 1);
             
             setTimeout(() => {
@@ -454,7 +498,6 @@
             }, 100);
         }
 
-        // Función createNote 
         function createNote(x, y, sceneText, dialogText, colorCode, sceneNum) {
             const note = document.createElement('div');
             note.className = 'note';
@@ -464,16 +507,18 @@
             note.style.zIndex = zIndexCounter++;
             note.style.backgroundColor = colorCode;
 
-            // HTML Interno: Badge de Escena + Escena + Diálogo
             note.innerHTML = `
                 <div class="note-header">
-                    <div class="scene-badge" title="Número de Escena">
-                        Escena <input type="number" class="scene-number-input" value="${sceneNum}" min="1">
+                    <label class="page-toggle" title="¿Es página doble?">
+                        <input type="checkbox"> Doble Pág.
+                    </label>
+                    <div class="scene-badge" title="Enumera la escena">
+                        # <input type="number" class="scene-number-input" value="${sceneNum}" min="1">
                     </div>
                 </div>
 
                 <div class="note-body">
-                    <div class="field-label"><i class="fa-solid fa-video"></i> Escena</div>
+                    <div class="field-label"><i class="fa-solid fa-video"></i> Descripción de escena</div>
                     <div class="editable-area scene-input" contenteditable="true" placeholder="Describe el lugar o la acción...">${sceneText}</div>
                     
                     <div class="field-label" style="margin-top: 8px;"><i class="fa-solid fa-comments"></i> Diálogo</div>
@@ -513,15 +558,14 @@
             note.style.zIndex = zIndexCounter;
         }
 
-        // --- Lógica de Arrastrar (Drag & Drop) ---
         let activeNote = null;
         let startX, startY, initialLeft, initialTop;
 
         function startDrag(e) {
-            // No arrastrar si se toca un input (título, escena, cuerpo) o controles
             if (e.target.closest('.note-controls') || 
                 e.target.isContentEditable || 
-                e.target.tagName === 'INPUT') {
+                e.target.tagName === 'INPUT' || 
+                e.target.closest('.page-toggle')) { 
                 return;
             }
 
@@ -569,26 +613,19 @@
             document.removeEventListener('touchend', stopDrag);
         }
 
-        // --- Guardar como Imagen COMPLETA ---
         function saveBoard() {
             const toolbar = document.getElementById('toolbar');
-            
-            // Ocultar botones pero DEJAR EL TÍTULO visible si se desea, 
-            // aunque html2canvas captura el body. 
-            // Para que quede bien, vamos a clonar el título y ponerlo temporalmente en el tablero
-            // o simplemente capturar todo el body incluyendo el toolbar modificado.
-            
-            // Estrategia: Ocultar los botones de "Agregar" y "Foto", pero dejar el título visible
-            // para que salga en la foto final.
             const btnAdd = document.getElementById('btn-add');
             const btnSave = document.getElementById('btn-save');
             
+            // Ocultar botones, pero mantener los inputs visibles
             btnAdd.style.display = 'none';
             btnSave.style.display = 'none';
-            toolbar.style.boxShadow = 'none'; // Quitar sombra para la foto
-            toolbar.style.background = 'transparent'; // Fondo transparente para que parezca título flotante
             
-            // Centrar el título temporalmente si no lo está
+            // Estilizar el toolbar para que parezca parte del lienzo
+            toolbar.style.boxShadow = 'none'; 
+            toolbar.style.background = 'transparent'; 
+            
             const originalToolbarStyle = toolbar.style.cssText;
             toolbar.style.position = 'absolute';
             toolbar.style.width = '100%';
@@ -609,7 +646,7 @@
             const targetWidth = Math.max(board.scrollWidth, maxX + 50);
             const targetHeight = Math.max(board.scrollHeight, maxY + 50);
 
-            html2canvas(document.body, { // Capturar body para incluir el título
+            html2canvas(document.body, { 
                 backgroundColor: '#f0f4f8',
                 width: targetWidth,
                 height: targetHeight,
@@ -624,16 +661,15 @@
                 link.href = canvas.toDataURL();
                 link.click();
 
-                // Restaurar estilos
+                // Restaurar
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
-                toolbar.style.cssText = ''; // Limpiar estilos inline forzados
-                toolbar.style.display = 'flex'; // Asegurar display flex
+                toolbar.style.cssText = ''; 
+                toolbar.style.display = 'flex'; 
                 
                 showToast();
             }).catch(err => {
                 console.error("Error al guardar:", err);
-                // Restaurar estilos en caso de error
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
                 toolbar.style.cssText = '';
