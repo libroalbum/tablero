@@ -44,8 +44,8 @@
             width: 100%;
             height: 100%;
             font-family: 'Fredoka', sans-serif;
-            overflow: hidden; /* El tablero maneja su propio scroll si es necesario */
             background-color: var(--bg-board);
+            overflow: hidden; /* El body no hace scroll, lo hace el board */
         }
 
         /* --- UI: BARRA SUPERIOR --- */
@@ -60,7 +60,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             display: flex;
             gap: 15px;
-            z-index: 1000;
+            z-index: 2000; /* Por encima de todo */
             align-items: center;
         }
 
@@ -101,17 +101,19 @@
             position: relative;
             background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
             background-size: 30px 30px; /* Efecto de puntos */
-            overflow: hidden;
-            touch-action: none; /* Importante para gestos táctiles */
+            
+            /* Habilitar Scroll para ver más notas abajo */
+            overflow: auto; 
+            -webkit-overflow-scrolling: touch;
         }
 
         /* --- NOTAS (POST-ITS) --- */
         .note {
             position: absolute;
-            width: 240px;
-            min-height: 240px;
+            width: 240px;  /* Ancho fijo */
+            height: 240px; /* Alto fijo para uniformidad */
             background-color: var(--color-yellow);
-            border-radius: 20px; /* Bordes muy redondeados */
+            border-radius: 20px; 
             box-shadow: var(--shadow-soft);
             padding: 20px;
             display: flex;
@@ -119,6 +121,7 @@
             transition: box-shadow 0.2s, transform 0.2s;
             cursor: grab;
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden; /* Para mantener la forma fija */
         }
 
         .note:active {
@@ -127,7 +130,7 @@
 
         .note.dragging {
             box-shadow: var(--shadow-lift);
-            transform: scale(1.05) rotate(2deg); /* Efecto de elevación */
+            transform: scale(1.05) rotate(2deg);
             z-index: 999 !important;
         }
 
@@ -138,10 +141,23 @@
             color: #333;
             outline: none;
             line-height: 1.5;
-            user-select: text; /* Permitir seleccionar texto para editar */
+            user-select: text; 
             cursor: text;
             white-space: pre-wrap;
             font-weight: 500;
+            overflow-y: auto; /* Scroll interno si escriben mucho texto */
+            
+            /* Personalizar scrollbar interno */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0,0,0,0.1) transparent;
+        }
+        
+        .note-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .note-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 10px;
         }
         
         .note-content:empty:before {
@@ -154,9 +170,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
+            margin-top: 10px; /* Reducido un poco para dar más espacio al texto */
             opacity: 0;
             transition: opacity 0.2s;
+            flex-shrink: 0; /* Evita que se aplasten */
         }
 
         .note:hover .note-controls, 
@@ -218,7 +235,7 @@
             border-radius: 30px;
             font-weight: 600;
             transition: transform 0.3s;
-            z-index: 2000;
+            z-index: 3000;
         }
         #toast.show {
             transform: translateX(-50%) translateY(0);
@@ -230,7 +247,7 @@
 
     <!-- Barra de Herramientas -->
     <div id="toolbar">
-        <button id="btn-add" class="btn-main" onclick="createNote()">
+        <button id="btn-add" class="btn-main" onclick="createNewRandomNote()">
             <i class="fa-solid fa-plus"></i> Nueva Nota
         </button>
         <button id="btn-save" class="btn-main" onclick="saveBoard()">
@@ -238,19 +255,19 @@
         </button>
     </div>
 
-    <!-- El Tablero -->
+    <!-- El Tablero (con scroll) -->
     <div id="board">
         <!-- Las notas se generarán aquí -->
     </div>
 
     <!-- Mensaje Toast -->
-    <div id="toast">¡Tablero guardado como imagen! 📸</div>
+    <div id="toast">¡Foto completa guardada! 📸</div>
 
     <script>
         const board = document.getElementById('board');
-        let zIndexCounter = 10; // Para manejar qué nota está encima
+        let zIndexCounter = 10;
 
-        // Paleta de colores para las notas
+        // Paleta de colores
         const colors = [
             { bg: '#fff475', name: 'Amarillo' },
             { bg: '#fdcfe8', name: 'Rosa' },
@@ -260,25 +277,52 @@
             { bg: '#ffcc80', name: 'Naranja' }
         ];
 
-        // Crear una nota de bienvenida al inicio
+        // --- INICIO: Generar 20 notas automáticamente ---
         window.onload = () => {
-            createNote(window.innerWidth / 2 - 120, window.innerHeight / 2 - 120, "¡Bienvenido a tu tablero!\n\n✨ Haz doble clic para escribir.\n✨ Arrástrame por todos lados.\n✨ Cambia mi color abajo.");
+            const initialNotesCount = 20;
+            const containerWidth = window.innerWidth;
+            
+            // Textos de ejemplo para los niños
+            const sampleTexts = [
+                "¡Hola!", "Mi idea genial", "Proyecto de Ciencias", "Dibujar un gato", 
+                "Leer 10 min", "Matemáticas", "Recreo", "Fútbol ⚽", 
+                "Música 🎵", "Estudiar", "Planetas 🪐", "Dinosaurios 🦖",
+                "Inventar algo", "Ayudar en casa", "Hacer la tarea", "Leer un cuento",
+                "Amigos", "Cumpleaños 🎂", "Vacaciones", "Arte 🎨"
+            ];
+
+            for (let i = 0; i < initialNotesCount; i++) {
+                // Posición Aleatoria Esparcida
+                // X: Ancho de pantalla menos ancho nota
+                // Y: Esparcir verticalmente hasta 2500px para forzar el scroll
+                const x = Math.random() * (containerWidth - 260) + 10;
+                const y = Math.random() * (2000) + 80; // Distribución vertical amplia
+
+                const text = sampleTexts[i] || "";
+                createNote(x, y, text);
+            }
+
+            // Asegurar que el scroll empiece arriba
+            board.scrollTop = 0;
         };
 
-        function createNote(x = null, y = null, text = "") {
+        function createNewRandomNote() {
+            // Crear nota en la parte visible actual del tablero
+            const scrollY = board.scrollTop;
+            const x = Math.random() * (window.innerWidth - 260) + 20;
+            const y = scrollY + Math.random() * (window.innerHeight - 300) + 100;
+            createNote(x, y, "");
+        }
+
+        function createNote(x, y, text) {
             const note = document.createElement('div');
             note.className = 'note';
             
-            // Posición aleatoria si no se especifica
-            const posX = x !== null ? x : Math.random() * (window.innerWidth - 300) + 20;
-            const posY = y !== null ? y : Math.random() * (window.innerHeight - 300) + 80;
-            
-            note.style.left = `${posX}px`;
-            note.style.top = `${posY}px`;
+            note.style.left = `${x}px`;
+            note.style.top = `${y}px`;
             note.style.zIndex = zIndexCounter++;
             note.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)].bg;
 
-            // HTML interno de la nota
             note.innerHTML = `
                 <div class="note-content" contenteditable="true" spellcheck="false">${text}</div>
                 <div class="note-controls">
@@ -291,7 +335,6 @@
                 </div>
             `;
 
-            // Eventos para arrastrar y enfocar
             note.addEventListener('mousedown', startDrag);
             note.addEventListener('touchstart', startDrag, { passive: false });
             note.addEventListener('mousedown', () => bringToFront(note));
@@ -301,7 +344,7 @@
 
         function deleteNote(btn) {
             const note = btn.closest('.note');
-            note.style.transform = "scale(0)"; // Animación de salida
+            note.style.transform = "scale(0)"; 
             setTimeout(() => note.remove(), 200);
         }
 
@@ -320,7 +363,6 @@
         let startX, startY, initialLeft, initialTop;
 
         function startDrag(e) {
-            // Ignorar si se hace clic en los controles o en el contenido editable
             if (e.target.closest('.note-controls') || e.target.classList.contains('note-content')) {
                 return;
             }
@@ -329,16 +371,12 @@
             activeNote.classList.add('dragging');
             bringToFront(activeNote);
 
-            // Obtener coordenadas iniciales (Mouse o Touch)
             const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
             const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
             startX = clientX;
             startY = clientY;
             
-            const rect = activeNote.getBoundingClientRect();
-            // Necesitamos la posición relativa al padre, no al viewport, pero como body es relativo funciona similar
-            // Usamos offsetLeft/Top para mayor precisión dentro del contenedor
             initialLeft = activeNote.offsetLeft;
             initialTop = activeNote.offsetTop;
 
@@ -350,7 +388,7 @@
 
         function drag(e) {
             if (!activeNote) return;
-            e.preventDefault(); // Prevenir scroll en móviles
+            e.preventDefault(); 
 
             const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
             const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
@@ -373,26 +411,51 @@
             document.removeEventListener('touchend', stopDrag);
         }
 
-        // --- Guardar como Imagen ---
+        // --- Guardar como Imagen COMPLETA (Full Board) ---
         function saveBoard() {
-            // Ocultar la barra de herramientas temporalmente para la foto
             const toolbar = document.getElementById('toolbar');
             toolbar.style.display = 'none';
 
-            // Usar html2canvas
-            html2canvas(document.body, {
-                backgroundColor: '#f0f4f8', // Asegurar color de fondo
-                scale: 2 // Mejor calidad
+            // 1. Calcular el área total ocupada por las notas
+            let maxX = 0;
+            let maxY = 0;
+            const notes = document.querySelectorAll('.note');
+            
+            notes.forEach(note => {
+                // Posición relativa al contenedor board
+                const right = note.offsetLeft + note.offsetWidth;
+                const bottom = note.offsetTop + note.offsetHeight;
+                
+                if (right > maxX) maxX = right;
+                if (bottom > maxY) maxY = bottom;
+            });
+
+            // Añadir un margen al final
+            const targetWidth = Math.max(board.scrollWidth, maxX + 50);
+            const targetHeight = Math.max(board.scrollHeight, maxY + 50);
+
+            // 2. Configurar html2canvas para capturar toda el área
+            html2canvas(board, {
+                backgroundColor: '#f0f4f8',
+                width: targetWidth,
+                height: targetHeight,
+                windowWidth: targetWidth,
+                windowHeight: targetHeight,
+                scrollX: 0,
+                scrollY: 0,
+                scale: 2 // Alta calidad
             }).then(canvas => {
-                // Crear enlace de descarga
                 const link = document.createElement('a');
-                link.download = 'mi-tablero-creativo.png';
+                link.download = 'mi-tablero-completo.png';
                 link.href = canvas.toDataURL();
                 link.click();
 
-                // Restaurar barra y mostrar mensaje
                 toolbar.style.display = 'flex';
                 showToast();
+            }).catch(err => {
+                console.error("Error al guardar:", err);
+                toolbar.style.display = 'flex';
+                alert("Hubo un pequeño problema al guardar la foto.");
             });
         }
 
