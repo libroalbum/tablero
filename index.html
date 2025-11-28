@@ -104,7 +104,7 @@
             background: rgba(0,0,0,0.6); 
             backdrop-filter: blur(4px); 
             -webkit-backdrop-filter: blur(4px);
-            z-index: 9990; /* Capa oscura detrás de todo lo resaltado */
+            z-index: 9990; 
             display: none; 
             pointer-events: auto; 
         }
@@ -294,9 +294,11 @@
 
         .field-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: rgba(0,0,0,0.6); margin-bottom: 1px; display: flex; align-items: center; gap: 5px; }
 
+        /* AJUSTE TEXTO: MÁS PEQUEÑO (0.5rem) */
         .editable-area {
             width: 100%; background: rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 8px; 
-            font-size: 0.85rem; line-height: 1.25; color: #222; font-weight: 500; outline: none; 
+            font-size: 0.5rem; /* Ajustado a la mitad de pequeño (antes 0.85rem) */
+            line-height: 1.25; color: #222; font-weight: 500; outline: none; 
             border: 1px solid transparent; user-select: text; cursor: text; 
             min-height: 40px; flex-grow: 1; white-space: pre-wrap; word-wrap: break-word; word-break: break-word; 
             overflow-y: auto; scrollbar-width: thin;
