@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mi Storyboard Mágico</title>
     
-    <!-- Fuente amigable para niños -->
+    <!-- Fuente amigable para niños (Existente) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Fuentes para la Bienvenida (Nuevas) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Librería de Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,12 +21,17 @@
 
     <style>
         :root {
-            /* Paleta de Colores Vibrantes */
+            /* Paleta de Colores del Tablero */
             --bg-board: #f0f4f8;
             --dot-color: #d1d9e6;
             --shadow-soft: 0 4px 6px rgba(0,0,0,0.15);
             --shadow-lift: 0 15px 30px rgba(0,0,0,0.3);
             --color-yellow: #FFEA00;
+
+            /* Paleta de Colores de la Bienvenida */
+            --accent-color: #5d4037; /* Marrón */
+            --gold-color: #d4af37;   /* Dorado */
+            --endpaper-bg: #a5d6a7;  /* Verde suave */
         }
 
         * {
@@ -38,12 +46,123 @@
             height: 100%;
             font-family: 'Fredoka', sans-serif;
             background-color: var(--bg-board);
-            /* AJUSTE: El scroll ahora lo maneja el body/html para mejor sensación en móvil */
             overflow-x: hidden;
             overflow-y: auto; 
         }
 
-        /* Contenedor Principal para el fondo de puntos */
+        /* --- ESTILOS DE LA PANTALLA DE BIENVENIDA (NUEVO) --- */
+        .intro-overlay {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999; /* Encima de todo */
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.5s ease;
+        }
+
+        .intro-modal {
+            background: #fff;
+            width: 90%; 
+            max-width: 500px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: popInModal 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid var(--gold-color);
+            font-family: 'Lato', sans-serif;
+        }
+
+        .intro-character-circle {
+            width: 150px; 
+            height: 150px;
+            background: var(--endpaper-bg);
+            border-radius: 50%;
+            margin: -80px auto 20px auto;
+            border: 5px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: center;
+        }
+
+        .intro-character-img {
+            width: 80%; 
+            height: auto;
+        }
+
+        .intro-title {
+            font-family: 'Cinzel', serif; 
+            color: var(--accent-color);
+            font-size: 1.5rem; 
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .intro-text {
+            font-family: 'Lato', sans-serif; 
+            color: #555;
+            font-size: 1rem; 
+            line-height: 1.6; 
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+        
+        /* Negritas dentro del texto de intro */
+        .intro-text strong {
+            color: var(--accent-color);
+        }
+
+        .close-intro-btn {
+            position: absolute; 
+            top: 15px; 
+            right: 15px;
+            background: transparent; 
+            border: none;
+            font-size: 1.5rem; 
+            color: #999; 
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close-intro-btn:hover { 
+            color: var(--accent-color); 
+            transform: rotate(90deg); 
+        }
+
+        .action-btn {
+            background: var(--accent-color); 
+            color: #fff;
+            border: none; 
+            padding: 12px 30px;
+            font-family: 'Cinzel', serif; 
+            font-size: 1rem;
+            border-radius: 30px; 
+            cursor: pointer;
+            transition: 0.3s; 
+            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.3);
+        }
+
+        .action-btn:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(93, 64, 55, 0.4); 
+            background: var(--gold-color); 
+        }
+
+        @keyframes popInModal {
+            from { opacity: 0; transform: scale(0.8) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* --- ESTILOS DEL TABLERO (EXISTENTES) --- */
         #app-container {
             min-height: 100vh;
             width: 100%;
@@ -52,17 +171,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 30px; /* Espacio inicial arriba */
+            padding-top: 30px;
             padding-bottom: 100px;
         }
 
-        /* --- UI: BARRA SUPERIOR --- */
         #toolbar {
-            /* AJUSTE: Ya no es fixed. Es relativo al flujo para moverse con el contenido */
             position: relative; 
-            margin-bottom: 30px; /* Separación con el tablero */
-            
-            /* Fondo con gradiente vivo */
+            margin-bottom: 30px;
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             padding: 10px 20px;
             border-radius: 50px;
@@ -71,19 +186,14 @@
             gap: 12px;
             z-index: 2000;
             align-items: center;
-            
-            /* AJUSTE: Expansión horizontal controlada */
-            width: fit-content; /* Se ajusta al contenido */
-            max-width: 95%;     /* Pero no pasa del 95% de la pantalla */
+            width: fit-content;
+            max-width: 95%;
             border: 2px solid white; 
-            
-            /* AJUSTE: Evitar que se expanda hacia abajo (wrap) a menos que sea crítico */
             flex-wrap: nowrap; 
             justify-content: center;
-            overflow: hidden; /* Seguridad */
+            overflow: hidden;
         }
 
-        /* Estilos compartidos para inputs del toolbar */
         .toolbar-input {
             border: 2px solid rgba(255,255,255,0.8);
             background: rgba(255,255,255,0.9);
@@ -97,7 +207,7 @@
             user-select: text; 
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* Puntos suspensivos si es demasiado largo */
+            text-overflow: ellipsis;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: inline-block;
             cursor: text;
@@ -114,18 +224,17 @@
             color: #aaa;
         }
 
-        /* AJUSTE: Flexibilidad de los inputs */
         #student-name {
             min-width: 120px;
             max-width: 250px; 
-            flex: 1 1 auto; /* Crece y se encoge */
+            flex: 1 1 auto;
             font-weight: 500;
         }
 
         #project-title {
             min-width: 150px; 
-            max-width: 500px; /* Tope máximo para PC */
-            flex: 2 1 auto; /* Tiene prioridad para crecer */
+            max-width: 500px;
+            flex: 2 1 auto;
             font-weight: 600;
         }
 
@@ -142,7 +251,7 @@
             align-items: center;
             gap: 8px;
             white-space: nowrap;
-            flex-shrink: 0; /* No permitimos que los botones se aplasten */
+            flex-shrink: 0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
@@ -160,103 +269,47 @@
             color: white;
         }
 
-        /* --- EL TABLERO (GRID SYSTEM) --- */
         #board {
             width: 100%;
-            /* AJUSTE: Ya no tiene altura fija ni overflow, se adapta al contenido */
             position: relative;
-            
             display: grid;
-            /* Por defecto PC: 5 columnas */
             grid-template-columns: repeat(5, 240px); 
             grid-auto-rows: 250px; 
             gap: 25px; 
-            
             justify-content: center; 
             align-content: start;
-            padding: 0 20px; /* Margen lateral de seguridad */
+            padding: 0 20px;
         }
 
-        /* --- MEDIA QUERIES PARA MÓVILES (AJUSTE CLAVE) --- */
-        
-        /* Tablets y Laptops Pequeñas */
         @media (max-width: 1350px) {
-            #board {
-                grid-template-columns: repeat(4, 240px);
-            }
+            #board { grid-template-columns: repeat(4, 240px); }
         }
         
         @media (max-width: 1100px) {
-            #board {
-                grid-template-columns: repeat(3, 240px);
-            }
+            #board { grid-template-columns: repeat(3, 240px); }
         }
 
-        /* Tablets Verticales y Móviles Grandes */
         @media (max-width: 850px) {
-            #board {
-                grid-template-columns: repeat(2, 240px);
-            }
-            #toolbar {
-                /* En pantallas medianas permitimos wrap si es muy necesario */
-                flex-wrap: wrap;
-                width: 90%;
-            }
-            #student-name, #project-title {
-                max-width: 100%; /* Aprovechar ancho completo si hacen wrap */
-                width: auto;
-            }
+            #board { grid-template-columns: repeat(2, 240px); }
+            #toolbar { flex-wrap: wrap; width: 90%; }
+            #student-name, #project-title { max-width: 100%; width: auto; }
         }
 
-        /* Celulares (Ajuste Crítico solicitado) */
         @media (max-width: 550px) {
             #board {
-                /* 1 Columna que ocupe casi todo el ancho disponible */
                 grid-template-columns: 1fr;
                 gap: 20px;
                 padding: 0 15px;
                 width: 100%;
-                max-width: 350px; /* Limitar ancho máximo de nota en móvil */
+                max-width: 350px;
             }
-            
-            .note {
-                /* Asegurar que la nota se adapte */
-                width: 100% !important;
-                height: 280px; /* Un poco más altas en móvil para facilitar toque */
-            }
-
-            #toolbar {
-                width: 95%;
-                padding: 10px;
-                flex-direction: row; /* Mantener fila pero permitir wrap */
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            
-            /* En móvil, título y nombre ocupan línea completa para verse bien */
-            #student-name {
-                width: 100%;
-                max-width: 100%;
-                order: 1;
-                text-align: center;
-            }
-            #project-title {
-                width: 100%;
-                max-width: 100%;
-                order: 2;
-                text-align: center;
-            }
-            
-            /* Botones en una línea aparte */
-            .btn-main {
-                order: 3;
-                flex-grow: 1; /* Botones grandes fáciles de tocar */
-                justify-content: center;
-            }
+            .note { width: 100% !important; height: 280px; }
+            #toolbar { width: 95%; padding: 10px; flex-direction: row; flex-wrap: wrap; gap: 8px; }
+            #student-name { width: 100%; max-width: 100%; order: 1; text-align: center; }
+            #project-title { width: 100%; max-width: 100%; order: 2; text-align: center; }
+            .btn-main { order: 3; flex-grow: 1; justify-content: center; }
         }
 
-
-        /* --- NOTAS (POST-ITS) --- */
         .note {
             position: relative; 
             width: 100%;  
@@ -280,7 +333,6 @@
             cursor: grabbing;
         }
 
-        /* Header de la nota */
         .note-header {
             display: flex;
             justify-content: space-between; 
@@ -302,16 +354,8 @@
             transition: background 0.2s;
         }
 
-        .page-toggle:hover {
-            background: rgba(255,255,255,0.7);
-        }
-
-        .page-toggle input {
-            cursor: pointer;
-            width: 12px;
-            height: 12px;
-            margin: 0;
-        }
+        .page-toggle:hover { background: rgba(255,255,255,0.7); }
+        .page-toggle input { cursor: pointer; width: 12px; height: 12px; margin: 0; }
 
         .scene-badge {
             background: rgba(255,255,255,0.6);
@@ -339,12 +383,8 @@
             cursor: text;
             user-select: text;
         }
-        
         .scene-number-input::-webkit-outer-spin-button,
-        .scene-number-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        .scene-number-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         .note-body {
             flex-grow: 1;
@@ -355,7 +395,6 @@
             scrollbar-width: thin;
             padding-right: 2px;
         }
-        
         .note-body::-webkit-scrollbar { width: 4px; }
         .note-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
 
@@ -387,21 +426,10 @@
             white-space: pre-wrap;
         }
 
-        .editable-area:focus {
-            background: rgba(255,255,255,0.8);
-            border-color: rgba(0,0,0,0.1);
-        }
+        .editable-area:focus { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.1); }
+        .editable-area:empty:before { content: attr(placeholder); color: rgba(0,0,0,0.3); font-style: italic; font-weight: 400; }
 
-        .editable-area:empty:before {
-            content: attr(placeholder);
-            color: rgba(0,0,0,0.3);
-            font-style: italic;
-            font-weight: 400;
-        }
-
-        .dialogue-input {
-            font-family: 'Fredoka', sans-serif; 
-        }
+        .dialogue-input { font-family: 'Fredoka', sans-serif; }
 
         .note-controls {
             display: flex;
@@ -415,14 +443,9 @@
 
         .note:hover .note-controls, 
         .note:focus-within .note-controls,
-        .note.active .note-controls {
-            opacity: 1;
-        }
+        .note.active .note-controls { opacity: 1; }
 
-        .color-picker {
-            display: flex;
-            gap: 4px;
-        }
+        .color-picker { display: flex; gap: 4px; }
 
         .color-dot {
             width: 18px;
@@ -432,10 +455,7 @@
             border: 2px solid rgba(255,255,255,0.6);
             transition: transform 0.2s;
         }
-        
-        .color-dot:hover {
-            transform: scale(1.2);
-        }
+        .color-dot:hover { transform: scale(1.2); }
 
         .btn-delete {
             background: rgba(255,255,255,0.5);
@@ -451,10 +471,7 @@
             border-radius: 50%;
             transition: background 0.2s;
         }
-
-        .btn-delete:hover {
-            background: rgba(255, 82, 82, 0.3);
-        }
+        .btn-delete:hover { background: rgba(255, 82, 82, 0.3); }
 
         @keyframes popIn {
             from { transform: scale(0) rotate(-10deg); opacity: 0; }
@@ -474,18 +491,41 @@
             transition: transform 0.3s;
             z-index: 3000;
         }
-        #toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
+        #toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
+    <!-- MODAL DE BIENVENIDA (MODIFICADO) -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="intro-modal">
+            <!-- Botón X -->
+            <button class="close-intro-btn" onclick="closeIntro()"><i class="fas fa-times"></i></button>
+            
+            <!-- Imagen Personaje -->
+            <div class="intro-character-circle">
+                <img src="https://github.com/libroalbum/libro-lbum-pedag-gico/blob/main/images/personaje%20derecha.png?raw=true" class="intro-character-img" alt="Guía">
+            </div>
+            
+            <!-- Textos ADAPTADOS -->
+            <h2 class="intro-title">¡Hola, Aventurero!</h2>
+            <p class="intro-text">
+                Bienvenido a tu taller creativo. Aquí construirás el <strong>Storyboard</strong> para tu libro álbum digital.
+                <br><br>
+                Usa este espacio para describir <strong>cómo imaginas cada escena</strong> y escribe los <strong>diálogos</strong> de tus personajes.
+                <br><br>
+                <em>A continuación, encontrarás orientaciones sobre las partes del tablero y cómo usar sus herramientas.</em>
+            </p>
+            
+            <!-- Botón Principal -->
+            <button class="action-btn" onclick="closeIntro()">Comenzar a Crear</button>
+        </div>
+    </div>
+
     <!-- Contenedor Principal (Scrollable) -->
     <div id="app-container">
 
-        <!-- Barra de Herramientas (Ahora dentro del flujo) -->
+        <!-- Barra de Herramientas -->
         <div id="toolbar">
             <!-- Nombre del Estudiante -->
             <span id="student-name" class="toolbar-input" contenteditable="true" placeholder="Nombre: Estudiante" spellcheck="false"></span>
@@ -509,6 +549,15 @@
     <div id="toast">¡Storyboard guardado! 📸</div>
 
     <script>
+        // --- FUNCIÓN PARA CERRAR BIENVENIDA ---
+        function closeIntro() {
+            const overlay = document.getElementById('introOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+        }
+
         const board = document.getElementById('board');
         const appContainer = document.getElementById('app-container');
         
@@ -616,7 +665,6 @@
             allNotes.forEach(n => n.setAttribute('draggable', 'true'));
         }
 
-        // Evento dragover sobre el board
         board.addEventListener('dragover', (e) => {
             e.preventDefault(); 
             const draggingItem = document.querySelector('.sortable-dragging');
@@ -653,11 +701,9 @@
             const btnAdd = document.getElementById('btn-add');
             const btnSave = document.getElementById('btn-save');
             
-            // Ocultar botones
             btnAdd.style.display = 'none';
             btnSave.style.display = 'none';
             
-            // Estilo para la foto: transparente y limpio
             const oldBackground = toolbar.style.background;
             const oldBoxShadow = toolbar.style.boxShadow;
             const oldBorder = toolbar.style.border;
@@ -666,10 +712,7 @@
             toolbar.style.background = 'transparent';
             toolbar.style.boxShadow = 'none';
             toolbar.style.border = 'none';
-            // Importante: para la foto queremos que el título esté arriba
-            // Al estar en el flujo (app-container), html2canvas capturará todo si capturamos appContainer
             
-            // Capturar el contenedor completo que incluye toolbar y board
             html2canvas(appContainer, { 
                 backgroundColor: '#f0f4f8',
                 scale: 2 
@@ -679,7 +722,6 @@
                 link.href = canvas.toDataURL();
                 link.click();
 
-                // Restaurar
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
                 toolbar.style.background = oldBackground;
