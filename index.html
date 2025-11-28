@@ -23,8 +23,6 @@
             --dot-color: #d1d9e6;
             --shadow-soft: 0 4px 6px rgba(0,0,0,0.15);
             --shadow-lift: 0 15px 30px rgba(0,0,0,0.3);
-            
-            /* Colores de las notas por defecto */
             --color-yellow: #FFEA00;
         }
 
@@ -40,36 +38,56 @@
             height: 100%;
             font-family: 'Fredoka', sans-serif;
             background-color: var(--bg-board);
-            overflow: hidden; 
+            /* AJUSTE: El scroll ahora lo maneja el body/html para mejor sensación en móvil */
+            overflow-x: hidden;
+            overflow-y: auto; 
+        }
+
+        /* Contenedor Principal para el fondo de puntos */
+        #app-container {
+            min-height: 100vh;
+            width: 100%;
+            background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
+            background-size: 30px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px; /* Espacio inicial arriba */
+            padding-bottom: 100px;
         }
 
         /* --- UI: BARRA SUPERIOR --- */
         #toolbar {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            /* AJUSTE: Ya no es fixed. Es relativo al flujo para moverse con el contenido */
+            position: relative; 
+            margin-bottom: 30px; /* Separación con el tablero */
+            
             /* Fondo con gradiente vivo */
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-            padding: 10px 25px;
+            padding: 10px 20px;
             border-radius: 50px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             display: flex;
             gap: 12px;
             z-index: 2000;
             align-items: center;
-            max-width: 95%; 
+            
+            /* AJUSTE: Expansión horizontal controlada */
+            width: fit-content; /* Se ajusta al contenido */
+            max-width: 95%;     /* Pero no pasa del 95% de la pantalla */
             border: 2px solid white; 
-            /* Permitir que los elementos flexibles se ajusten */
-            flex-wrap: wrap; 
+            
+            /* AJUSTE: Evitar que se expanda hacia abajo (wrap) a menos que sea crítico */
+            flex-wrap: nowrap; 
             justify-content: center;
+            overflow: hidden; /* Seguridad */
         }
 
         /* Estilos compartidos para inputs del toolbar */
         .toolbar-input {
             border: 2px solid rgba(255,255,255,0.8);
             background: rgba(255,255,255,0.9);
-            padding: 10px 20px;
+            padding: 10px 15px;
             border-radius: 30px;
             font-family: 'Fredoka', sans-serif;
             font-size: 1rem;
@@ -79,6 +97,7 @@
             user-select: text; 
             white-space: nowrap;
             overflow: hidden;
+            text-overflow: ellipsis; /* Puntos suspensivos si es demasiado largo */
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: inline-block;
             cursor: text;
@@ -90,23 +109,23 @@
             border-color: #fff;
         }
 
-        /* AJUSTE: Placeholder simulado para todos los inputs editables */
         .toolbar-input:empty:before {
             content: attr(placeholder);
             color: #aaa;
         }
 
-        /* AJUSTE: Nombre del Estudiante (Elástico) */
+        /* AJUSTE: Flexibilidad de los inputs */
         #student-name {
-            min-width: 150px; /* Ancho mínimo razonable */
-            max-width: 300px; /* Crece bastante si es necesario */
+            min-width: 120px;
+            max-width: 250px; 
+            flex: 1 1 auto; /* Crece y se encoge */
             font-weight: 500;
         }
 
-        /* Input del Título (Elástico) */
         #project-title {
-            min-width: 200px; 
-            max-width: 450px; 
+            min-width: 150px; 
+            max-width: 500px; /* Tope máximo para PC */
+            flex: 2 1 auto; /* Tiene prioridad para crecer */
             font-weight: 600;
         }
 
@@ -123,7 +142,7 @@
             align-items: center;
             gap: 8px;
             white-space: nowrap;
-            flex-shrink: 0; 
+            flex-shrink: 0; /* No permitimos que los botones se aplasten */
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
@@ -144,21 +163,98 @@
         /* --- EL TABLERO (GRID SYSTEM) --- */
         #board {
             width: 100%;
-            height: 100%;
+            /* AJUSTE: Ya no tiene altura fija ni overflow, se adapta al contenido */
             position: relative;
-            background-image: radial-gradient(var(--dot-color) 2px, transparent 2px);
-            background-size: 30px 30px; 
-            overflow-y: auto; 
-            overflow-x: auto; 
             
             display: grid;
+            /* Por defecto PC: 5 columnas */
             grid-template-columns: repeat(5, 240px); 
             grid-auto-rows: 250px; 
             gap: 25px; 
-            padding: 120px 50px 100px 50px; /* Padding superior aumentado por seguridad */
+            
             justify-content: center; 
             align-content: start;
+            padding: 0 20px; /* Margen lateral de seguridad */
         }
+
+        /* --- MEDIA QUERIES PARA MÓVILES (AJUSTE CLAVE) --- */
+        
+        /* Tablets y Laptops Pequeñas */
+        @media (max-width: 1350px) {
+            #board {
+                grid-template-columns: repeat(4, 240px);
+            }
+        }
+        
+        @media (max-width: 1100px) {
+            #board {
+                grid-template-columns: repeat(3, 240px);
+            }
+        }
+
+        /* Tablets Verticales y Móviles Grandes */
+        @media (max-width: 850px) {
+            #board {
+                grid-template-columns: repeat(2, 240px);
+            }
+            #toolbar {
+                /* En pantallas medianas permitimos wrap si es muy necesario */
+                flex-wrap: wrap;
+                width: 90%;
+            }
+            #student-name, #project-title {
+                max-width: 100%; /* Aprovechar ancho completo si hacen wrap */
+                width: auto;
+            }
+        }
+
+        /* Celulares (Ajuste Crítico solicitado) */
+        @media (max-width: 550px) {
+            #board {
+                /* 1 Columna que ocupe casi todo el ancho disponible */
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 15px;
+                width: 100%;
+                max-width: 350px; /* Limitar ancho máximo de nota en móvil */
+            }
+            
+            .note {
+                /* Asegurar que la nota se adapte */
+                width: 100% !important;
+                height: 280px; /* Un poco más altas en móvil para facilitar toque */
+            }
+
+            #toolbar {
+                width: 95%;
+                padding: 10px;
+                flex-direction: row; /* Mantener fila pero permitir wrap */
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            /* En móvil, título y nombre ocupan línea completa para verse bien */
+            #student-name {
+                width: 100%;
+                max-width: 100%;
+                order: 1;
+                text-align: center;
+            }
+            #project-title {
+                width: 100%;
+                max-width: 100%;
+                order: 2;
+                text-align: center;
+            }
+            
+            /* Botones en una línea aparte */
+            .btn-main {
+                order: 3;
+                flex-grow: 1; /* Botones grandes fáciles de tocar */
+                justify-content: center;
+            }
+        }
+
 
         /* --- NOTAS (POST-ITS) --- */
         .note {
@@ -382,48 +478,39 @@
             transform: translateX(-50%) translateY(0);
         }
 
-        @media (max-width: 1300px) {
-            #board {
-                justify-content: flex-start; 
-            }
-        }
-
-        @media (max-width: 800px) {
-            #toolbar {
-                gap: 10px;
-            }
-            #student-name { order: 1; width: 100%; max-width: 100%; }
-            #project-title { order: 2; width: 100%; max-width: 100%; }
-            .btn-main { order: 3; }
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- Barra de Herramientas -->
-    <div id="toolbar">
-        <!-- Nombre del Estudiante (Ahora elástico con contenteditable) -->
-        <span id="student-name" class="toolbar-input" contenteditable="true" placeholder="Nombre: Estudiante" spellcheck="false"></span>
+    <!-- Contenedor Principal (Scrollable) -->
+    <div id="app-container">
 
-        <!-- Título del Proyecto (Elástico) -->
-        <span id="project-title" class="toolbar-input" contenteditable="true" placeholder="Título de tu Historia..." spellcheck="false"></span>
+        <!-- Barra de Herramientas (Ahora dentro del flujo) -->
+        <div id="toolbar">
+            <!-- Nombre del Estudiante -->
+            <span id="student-name" class="toolbar-input" contenteditable="true" placeholder="Nombre: Estudiante" spellcheck="false"></span>
 
-        <button id="btn-add" class="btn-main" onclick="createNewNote()">
-            <i class="fa-solid fa-plus"></i> Nueva Nota
-        </button>
-        <button id="btn-save" class="btn-main" onclick="saveBoard()">
-            <i class="fa-solid fa-camera"></i> Foto
-        </button>
+            <!-- Título del Proyecto -->
+            <span id="project-title" class="toolbar-input" contenteditable="true" placeholder="Título de tu Historia..." spellcheck="false"></span>
+
+            <button id="btn-add" class="btn-main" onclick="createNewNote()">
+                <i class="fa-solid fa-plus"></i> Nueva Nota
+            </button>
+            <button id="btn-save" class="btn-main" onclick="saveBoard()">
+                <i class="fa-solid fa-camera"></i> Foto
+            </button>
+        </div>
+
+        <!-- El Tablero (Grid) -->
+        <div id="board"></div>
+
     </div>
-
-    <!-- El Tablero (Grid) -->
-    <div id="board"></div>
 
     <div id="toast">¡Storyboard guardado! 📸</div>
 
     <script>
         const board = document.getElementById('board');
+        const appContainer = document.getElementById('app-container');
         
         const colors = [
             { bg: '#FFEB3B', name: 'Amarillo Sol' },   
@@ -529,6 +616,7 @@
             allNotes.forEach(n => n.setAttribute('draggable', 'true'));
         }
 
+        // Evento dragover sobre el board
         board.addEventListener('dragover', (e) => {
             e.preventDefault(); 
             const draggingItem = document.querySelector('.sortable-dragging');
@@ -565,32 +653,25 @@
             const btnAdd = document.getElementById('btn-add');
             const btnSave = document.getElementById('btn-save');
             
+            // Ocultar botones
             btnAdd.style.display = 'none';
             btnSave.style.display = 'none';
             
+            // Estilo para la foto: transparente y limpio
             const oldBackground = toolbar.style.background;
             const oldBoxShadow = toolbar.style.boxShadow;
             const oldBorder = toolbar.style.border;
+            const oldPosition = toolbar.style.position;
             
             toolbar.style.background = 'transparent';
             toolbar.style.boxShadow = 'none';
             toolbar.style.border = 'none';
-            toolbar.style.position = 'absolute';
-            toolbar.style.width = '100%';
-            toolbar.style.justifyContent = 'center';
-            toolbar.style.top = '20px';
-
-            const targetWidth = board.scrollWidth;
-            const targetHeight = board.scrollHeight;
-
-            html2canvas(document.body, { 
+            // Importante: para la foto queremos que el título esté arriba
+            // Al estar en el flujo (app-container), html2canvas capturará todo si capturamos appContainer
+            
+            // Capturar el contenedor completo que incluye toolbar y board
+            html2canvas(appContainer, { 
                 backgroundColor: '#f0f4f8',
-                width: targetWidth,
-                height: targetHeight,
-                windowWidth: targetWidth,
-                windowHeight: targetHeight,
-                scrollX: 0,
-                scrollY: 0,
                 scale: 2 
             }).then(canvas => {
                 const link = document.createElement('a');
@@ -598,24 +679,22 @@
                 link.href = canvas.toDataURL();
                 link.click();
 
+                // Restaurar
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
                 toolbar.style.background = oldBackground;
                 toolbar.style.boxShadow = oldBoxShadow;
                 toolbar.style.border = oldBorder;
-                toolbar.style.cssText = ''; 
-                toolbar.style.display = 'flex'; 
+                toolbar.style.position = oldPosition;
                 
                 showToast();
             }).catch(err => {
                 console.error("Error al guardar:", err);
                 btnAdd.style.display = '';
                 btnSave.style.display = '';
-                toolbar.style.background = '';
-                toolbar.style.boxShadow = '';
-                toolbar.style.border = '';
-                toolbar.style.cssText = '';
-                toolbar.style.display = 'flex';
+                toolbar.style.background = oldBackground;
+                toolbar.style.boxShadow = oldBoxShadow;
+                toolbar.style.border = oldBorder;
                 alert("Hubo un problema al guardar la foto.");
             });
         }
