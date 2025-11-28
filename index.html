@@ -50,7 +50,7 @@
             left: 50%;
             transform: translateX(-50%);
             background: white;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 50px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             display: flex;
@@ -59,18 +59,41 @@
             align-items: center;
         }
 
+        /* Input del Título del Proyecto */
+        #project-title {
+            border: 2px solid #eee;
+            background: #f9f9f9;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            outline: none;
+            width: 250px;
+            text-align: center;
+            transition: border-color 0.3s;
+            user-select: text; /* Permitir escribir */
+        }
+
+        #project-title:focus {
+            border-color: #FF4081;
+            background: white;
+        }
+
         .btn-main {
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 30px;
             font-family: 'Fredoka', sans-serif;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
         }
 
         .btn-main:active {
@@ -104,11 +127,11 @@
         .note {
             position: absolute;
             width: 240px;  
-            height: 240px; 
+            height: 250px; /* Ligeramente más alto para el número */
             background-color: var(--color-yellow);
             border-radius: 16px; 
             box-shadow: var(--shadow-soft);
-            padding: 15px;
+            padding: 12px 15px 15px 15px;
             display: flex;
             flex-direction: column;
             transition: box-shadow 0.2s, transform 0.2s;
@@ -127,7 +150,48 @@
             z-index: 999 !important;
         }
 
-        /* --- ESTRUCTURA INTERNA DE LA NOTA (NUEVO) --- */
+        /* Header de la nota (Número de Escena) */
+        .note-header {
+            display: flex;
+            justify-content: flex-end; /* A la derecha */
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .scene-badge {
+            background: rgba(255,255,255,0.6);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .scene-number-input {
+            width: 30px;
+            border: none;
+            background: transparent;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #222;
+            text-align: center;
+            outline: none;
+            cursor: text;
+            user-select: text;
+        }
+        
+        /* Ocultar flechas del input number */
+        .scene-number-input::-webkit-outer-spin-button,
+        .scene-number-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* --- ESTRUCTURA INTERNA DE LA NOTA --- */
         .note-body {
             flex-grow: 1;
             display: flex;
@@ -159,7 +223,7 @@
             background: rgba(255,255,255,0.4);
             border-radius: 8px;
             padding: 8px;
-            font-size: 0.9rem; /* Letra ajustada (más pequeña) */
+            font-size: 0.9rem; 
             line-height: 1.3;
             color: #222;
             font-weight: 500;
@@ -184,10 +248,8 @@
             font-weight: 400;
         }
 
-        /* Sección Diálogo con estilo diferente */
         .dialogue-input {
             font-family: 'Fredoka', sans-serif; 
-            /* background: rgba(0,0,0,0.05); opcional para distinguir */
         }
 
         /* --- CONTROLES DE LA NOTA --- */
@@ -268,12 +330,28 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        /* Media Query para pantallas pequeñas (Toolbar) */
+        @media (max-width: 600px) {
+            #toolbar {
+                width: 90%;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            #project-title {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+
     </style>
 </head>
 <body>
 
     <!-- Barra de Herramientas -->
     <div id="toolbar">
+        <!-- Título del Proyecto -->
+        <input type="text" id="project-title" placeholder="Título de tu Historia..." spellcheck="false">
+
         <button id="btn-add" class="btn-main" onclick="createNewRandomNote()">
             <i class="fa-solid fa-plus"></i> Nueva Nota
         </button>
@@ -310,13 +388,12 @@
             
             // Configuración
             const noteWidth = 240;
-            const noteHeight = 240;
+            const noteHeight = 250; // Ajustado a la nueva altura
             const gapX = 30; 
             const gapY = 30; 
             const startX = 50; 
             const startY = 100;
 
-            // Datos de ejemplo para storyboard
             const sampleData = [
                 { scene: "Intro: Parque soleado", dialog: "¡Qué buen día!" },
                 { scene: "Aparece el villano", dialog: "¡Jajaja!" },
@@ -332,30 +409,53 @@
                 const x = startX + (col * (noteWidth + gapX));
                 const y = startY + (row * (noteHeight + gapY));
 
-                // Usar datos de ejemplo para las primeras, vacías para el resto
                 const data = sampleData[i] || { scene: "", dialog: "" };
-                
                 const colorIndex = i % colors.length;
-                createNote(x, y, data.scene, data.dialog, colors[colorIndex].bg);
+                
+                // Pasamos (i + 1) como número de escena inicial
+                createNote(x, y, data.scene, data.dialog, colors[colorIndex].bg, i + 1);
             }
 
             board.scrollTop = 0;
             board.scrollLeft = 0;
         };
 
+        // --- Agregar nota en orden de cuadrícula ---
         function createNewRandomNote() {
-            const scrollY = board.scrollTop;
-            const scrollX = board.scrollLeft;
+            const columns = 5;
+            const noteWidth = 240;
+            const noteHeight = 250;
+            const gapX = 30; 
+            const gapY = 30; 
+            const startX = 50; 
+            const startY = 100;
+
+            // Contar notas para posición y número de escena
+            const allNotes = document.querySelectorAll('.note');
+            const count = allNotes.length;
             
-            const x = scrollX + Math.random() * (window.innerWidth - 300) + 20;
-            const y = scrollY + Math.random() * (window.innerHeight - 300) + 100;
+            // Calcular columna y fila
+            const col = count % columns;
+            const row = Math.floor(count / columns);
+
+            const x = startX + (col * (noteWidth + gapX));
+            const y = startY + (row * (noteHeight + gapY));
             
             const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
-            createNote(x, y, "", "", randomColor);
+            
+            // El número de escena será count + 1
+            createNote(x, y, "", "", randomColor, count + 1);
+            
+            setTimeout(() => {
+                const newNote = board.lastElementChild;
+                if(newNote) {
+                    newNote.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 100);
         }
 
-        // Función createNote actualizada con DOS campos
-        function createNote(x, y, sceneText, dialogText, colorCode) {
+        // Función createNote 
+        function createNote(x, y, sceneText, dialogText, colorCode, sceneNum) {
             const note = document.createElement('div');
             note.className = 'note';
             
@@ -364,8 +464,14 @@
             note.style.zIndex = zIndexCounter++;
             note.style.backgroundColor = colorCode;
 
-            // HTML Interno Actualizado: Escena + Diálogo
+            // HTML Interno: Badge de Escena + Escena + Diálogo
             note.innerHTML = `
+                <div class="note-header">
+                    <div class="scene-badge" title="Número de Escena">
+                        Escena <input type="number" class="scene-number-input" value="${sceneNum}" min="1">
+                    </div>
+                </div>
+
                 <div class="note-body">
                     <div class="field-label"><i class="fa-solid fa-video"></i> Escena</div>
                     <div class="editable-area scene-input" contenteditable="true" placeholder="Describe el lugar o la acción...">${sceneText}</div>
@@ -412,8 +518,10 @@
         let startX, startY, initialLeft, initialTop;
 
         function startDrag(e) {
-            // CRUCIAL: No arrastrar si se toca un área editable (input) o los controles
-            if (e.target.closest('.note-controls') || e.target.isContentEditable) {
+            // No arrastrar si se toca un input (título, escena, cuerpo) o controles
+            if (e.target.closest('.note-controls') || 
+                e.target.isContentEditable || 
+                e.target.tagName === 'INPUT') {
                 return;
             }
 
@@ -464,7 +572,28 @@
         // --- Guardar como Imagen COMPLETA ---
         function saveBoard() {
             const toolbar = document.getElementById('toolbar');
-            toolbar.style.display = 'none';
+            
+            // Ocultar botones pero DEJAR EL TÍTULO visible si se desea, 
+            // aunque html2canvas captura el body. 
+            // Para que quede bien, vamos a clonar el título y ponerlo temporalmente en el tablero
+            // o simplemente capturar todo el body incluyendo el toolbar modificado.
+            
+            // Estrategia: Ocultar los botones de "Agregar" y "Foto", pero dejar el título visible
+            // para que salga en la foto final.
+            const btnAdd = document.getElementById('btn-add');
+            const btnSave = document.getElementById('btn-save');
+            
+            btnAdd.style.display = 'none';
+            btnSave.style.display = 'none';
+            toolbar.style.boxShadow = 'none'; // Quitar sombra para la foto
+            toolbar.style.background = 'transparent'; // Fondo transparente para que parezca título flotante
+            
+            // Centrar el título temporalmente si no lo está
+            const originalToolbarStyle = toolbar.style.cssText;
+            toolbar.style.position = 'absolute';
+            toolbar.style.width = '100%';
+            toolbar.style.justifyContent = 'center';
+            toolbar.style.top = '20px';
 
             let maxX = 0;
             let maxY = 0;
@@ -480,7 +609,7 @@
             const targetWidth = Math.max(board.scrollWidth, maxX + 50);
             const targetHeight = Math.max(board.scrollHeight, maxY + 50);
 
-            html2canvas(board, {
+            html2canvas(document.body, { // Capturar body para incluir el título
                 backgroundColor: '#f0f4f8',
                 width: targetWidth,
                 height: targetHeight,
@@ -495,10 +624,19 @@
                 link.href = canvas.toDataURL();
                 link.click();
 
-                toolbar.style.display = 'flex';
+                // Restaurar estilos
+                btnAdd.style.display = '';
+                btnSave.style.display = '';
+                toolbar.style.cssText = ''; // Limpiar estilos inline forzados
+                toolbar.style.display = 'flex'; // Asegurar display flex
+                
                 showToast();
             }).catch(err => {
                 console.error("Error al guardar:", err);
+                // Restaurar estilos en caso de error
+                btnAdd.style.display = '';
+                btnSave.style.display = '';
+                toolbar.style.cssText = '';
                 toolbar.style.display = 'flex';
                 alert("Hubo un problema al guardar la foto.");
             });
