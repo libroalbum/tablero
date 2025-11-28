@@ -129,11 +129,11 @@
         /* Contenedor flotante de la burbuja guía */
         .ped-label-container {
             width: 280px; display: flex; flex-direction: column; 
-            position: fixed; /* AJUSTE: Fixed para estar siempre encima */
+            position: fixed; /* Fixed para estar siempre encima */
             align-items: center; text-align: left; 
-            z-index: 10000; /* AJUSTE: El más alto para que no se oculte */
+            z-index: 10000; /* El más alto para que no se oculte */
             transition: top 0.5s ease, left 0.5s ease; pointer-events: auto; 
-            display: none; /* Controlado por JS */
+            display: none; 
         }
 
         .ped-cloud {
@@ -164,36 +164,6 @@
         .close-guide-btn:hover { color: var(--accent-color); }
 
         .ped-cloud.active { opacity: 1; transform: translateY(0); }
-
-        /* --- ESTILO DE LA EXPLOSIÓN DE BURBUJAS --- */
-        #bubble-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 10000; /* Encima de todo */
-            overflow: hidden;
-            display: none; 
-        }
-
-        .bubble {
-            position: absolute;
-            border-radius: 50%;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            /* AJUSTE: Animación más rápida (0.6s) */
-            animation: bubbleExplode 0.6s ease-out forwards;
-        }
-
-        @keyframes bubbleExplode {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2);
-            }
-        }
 
         /* --- ESTILOS DEL TABLERO --- */
         #app-container {
@@ -297,7 +267,7 @@
         /* AJUSTE TEXTO: MÁS PEQUEÑO (0.5rem) */
         .editable-area {
             width: 100%; background: rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 8px; 
-            font-size: 0.5rem; /* Ajustado a la mitad de pequeño (antes 0.85rem) */
+            font-size: 0.5rem; 
             line-height: 1.25; color: #222; font-weight: 500; outline: none; 
             border: 1px solid transparent; user-select: text; cursor: text; 
             min-height: 40px; flex-grow: 1; white-space: pre-wrap; word-wrap: break-word; word-break: break-word; 
@@ -323,7 +293,12 @@
         }
         .btn-delete:hover { background: rgba(255, 82, 82, 0.3); }
 
+        /* --- ANIMACIÓN PIANO POP --- */
         @keyframes popIn { from { transform: scale(0) rotate(-10deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+        @keyframes pianoPop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
         #toast {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #333; color: white;
@@ -353,10 +328,10 @@
         </div>
     </div>
 
-    <!-- CAPA DE FONDO OSCURO PARA GUÍAS (Separada para manejo de capas) -->
+    <!-- CAPA DE FONDO OSCURO PARA GUÍAS -->
     <div id="guide-overlay"></div>
 
-    <!-- CONTENEDOR DE LA BURBUJA GUÍA (Fuera del overlay para estar siempre encima) -->
+    <!-- CONTENEDOR DE LA BURBUJA GUÍA -->
     <div id="guide-container" class="ped-label-container">
         <div id="guide-cloud" class="ped-cloud">
             <button class="close-guide-btn" onclick="nextGuideStep()"><i class="fas fa-times"></i></button>
@@ -364,9 +339,6 @@
             <p id="guide-text">Texto de la guía...</p>
         </div>
     </div>
-
-    <!-- CONTENEDOR DE EXPLOSIÓN DE BURBUJAS (Fuera del overlay) -->
-    <div id="bubble-container"></div>
 
     <!-- Contenedor Principal -->
     <div id="app-container">
@@ -492,52 +464,30 @@
         }
 
         function endGuide() {
+            // Limpiar resaltados
             document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));
             document.getElementById('toolbar').classList.remove('highlight-parent');
             
-            // Ocultar burbuja guía actual
+            // Ocultar burbuja guía
             document.getElementById('guide-container').style.display = 'none';
+            // Ocultar fondo oscuro
+            document.getElementById('guide-overlay').style.display = 'none';
 
-            // --- ANIMACIÓN DE EXPLOSIÓN ---
-            const bubbleContainer = document.getElementById('bubble-container');
-            bubbleContainer.style.display = 'block';
-            bubbleContainer.innerHTML = ''; 
-
-            const numBubbles = 30; 
+            // --- ANIMACIÓN SECUENCIAL (PIANO) ---
+            const notes = document.querySelectorAll('.note');
             
-            for (let i = 0; i < numBubbles; i++) {
-                const bubble = document.createElement('div');
-                bubble.className = 'bubble';
-                const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
-                bubble.style.backgroundColor = randomColor;
-                
-                const size = Math.random() * 20 + 10;
-                bubble.style.width = `${size}px`;
-                bubble.style.height = `${size}px`;
+            // 1. Ocultar todas las notas inmediatamente
+            notes.forEach(note => {
+                note.style.opacity = '0';
+                note.style.animation = 'none'; // Reiniciar cualquier animación previa
+            });
 
-                const angle = Math.random() * Math.PI * 2; 
-                const distance = Math.random() * 200 + 100; 
-                const tx = Math.cos(angle) * distance;
-                const ty = Math.sin(angle) * distance;
-                
-                bubble.style.setProperty('--tx', `${tx}px`);
-                bubble.style.setProperty('--ty', `${ty}px`);
-                bubble.style.animationDelay = `${Math.random() * 0.2}s`;
-
-                bubbleContainer.appendChild(bubble);
-            }
-
-            setTimeout(() => {
-                bubbleContainer.style.display = 'none';
-                bubbleContainer.innerHTML = ''; 
-                
-                const overlay = document.getElementById('guide-overlay');
-                overlay.style.opacity = '0';
+            // 2. Revelar una a una con un pequeño retraso (50ms)
+            notes.forEach((note, index) => {
                 setTimeout(() => {
-                    overlay.style.display = 'none';
-                    overlay.style.pointerEvents = 'none'; 
-                }, 500);
-            }, 800); // Acortado para coincidir con la animación rápida
+                    note.style.animation = 'pianoPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+                }, index * 50); // 50ms de diferencia entre cada una para efecto rápido
+            });
         }
 
         // --- LÓGICA DEL TABLERO ---
