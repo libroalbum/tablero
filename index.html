@@ -101,7 +101,7 @@
         /* --- ESTILOS DE GUÍAS (Highlighter) --- */
         #guide-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); /* Oscurecer fondo */
+            background: rgba(0,0,0,0.6); 
             backdrop-filter: blur(4px); 
             -webkit-backdrop-filter: blur(4px);
             z-index: 9990; 
@@ -109,31 +109,25 @@
             pointer-events: auto; 
         }
 
-        /* CLASE PARA RESALTAR ELEMENTOS (Efecto Foco) */
         .highlight-active {
-            z-index: 9995 !important; /* Encima del overlay */
-            position: relative; /* Necesario para z-index */
+            z-index: 9995 !important;
+            position: relative; 
             box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8), 0 0 20px rgba(0,0,0,0.5) !important;
             transition: all 0.3s ease;
-            background-color: white; /* Asegurar fondo opaco en botones */
-            border-radius: inherit; /* Heredar bordes redondeados */
+            background-color: white; 
+            border-radius: inherit; 
         }
         
-        /* Ajuste específico para resaltar notas que ya tienen color de fondo */
-        .note.highlight-active {
-            background-color: var(--color-yellow); /* Mantener su color */
-        }
+        .note.highlight-active { background-color: var(--color-yellow); }
         
-        /* Ajuste para cuando se resalta el Toolbar (padre de los botones) */
         #toolbar.highlight-parent {
             z-index: 9995 !important;
             background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%) !important; 
         }
 
-        /* Burbuja Guía */
         .ped-label-container {
             width: 280px; display: flex; flex-direction: column; position: absolute; 
-            align-items: center; text-align: left; z-index: 9998; /* Encima del elemento resaltado */
+            align-items: center; text-align: left; z-index: 9998; 
             transition: top 0.5s ease, left 0.5s ease; pointer-events: auto; 
         }
 
@@ -165,6 +159,38 @@
         .close-guide-btn:hover { color: var(--accent-color); }
 
         .ped-cloud.active { opacity: 1; transform: translateY(0); }
+
+        /* --- ESTILO DE LA EXPLOSIÓN DE BURBUJAS (NUEVO) --- */
+        #bubble-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+            overflow: hidden;
+            display: none; /* Se activa con JS */
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            /* Posición inicial en el centro */
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            /* La animación usará variables CSS para la dirección */
+            animation: bubbleExplode 1s ease-out forwards;
+        }
+
+        @keyframes bubbleExplode {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                /* Se mueven a una posición final aleatoria y se hacen pequeños */
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2);
+            }
+        }
 
         /* --- ESTILOS DEL TABLERO --- */
         #app-container {
@@ -261,24 +287,19 @@
         }
         .scene-number-input::-webkit-outer-spin-button, .scene-number-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        .note-body { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; /* Evitar desborde del contenedor principal */ }
+        .note-body { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
 
         .field-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: rgba(0,0,0,0.6); margin-bottom: 1px; display: flex; align-items: center; gap: 5px; }
 
-        /* AJUSTE TEXTO: Más pequeño y contenido dentro de la caja con scroll */
         .editable-area {
             width: 100%; background: rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 8px; 
-            font-size: 0.85rem; /* Letra más pequeña */
-            line-height: 1.25; color: #222; font-weight: 500; outline: none; 
+            font-size: 0.85rem; line-height: 1.25; color: #222; font-weight: 500; outline: none; 
             border: 1px solid transparent; user-select: text; cursor: text; 
-            min-height: 40px; flex-grow: 1; /* Ocupar espacio disponible */
-            white-space: pre-wrap; word-wrap: break-word; word-break: break-word; /* Romper palabras largas */
-            overflow-y: auto; /* Scroll interno si es necesario */
-            scrollbar-width: thin;
+            min-height: 40px; flex-grow: 1; white-space: pre-wrap; word-wrap: break-word; word-break: break-word; 
+            overflow-y: auto; scrollbar-width: thin;
         }
         .editable-area::-webkit-scrollbar { width: 4px; }
         .editable-area::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
-        
         .editable-area:focus { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.1); }
         .editable-area:empty:before { content: attr(placeholder); color: rgba(0,0,0,0.3); font-style: italic; font-weight: 400; }
 
@@ -329,6 +350,9 @@
 
     <!-- CAPA DE GUÍAS INTERACTIVAS -->
     <div id="guide-overlay">
+        <!-- Contenedor para la explosión de burbujas -->
+        <div id="bubble-container"></div>
+
         <div id="guide-container" class="ped-label-container">
             <div id="guide-cloud" class="ped-cloud">
                 <button class="close-guide-btn" onclick="nextGuideStep()"><i class="fas fa-times"></i></button>
@@ -347,7 +371,7 @@
                 <i class="fa-solid fa-plus"></i> Nueva Nota
             </button>
             <button id="btn-save" class="btn-main" onclick="saveBoard()">
-                <i class="fa-solid fa-camera"></i> Foto
+                <i class="fa-solid fa-download"></i> Guardar Trabajo
             </button>
         </div>
         <div id="board"></div>
@@ -361,27 +385,21 @@
         
         const guideSteps = [
             {
+                targetSelector: '.note', 
+                title: 'Tus Ideas (La Nota)',
+                text: 'Aquí ocurre la magia. Arrastra las notas para ordenarlas. Edita la "Descripción" y el "Diálogo". Marca si es doble página y cambia el número de escena si lo necesitas.',
+                highlightClass: 'note' 
+            },
+            {
                 targetId: 'btn-add',
                 title: 'Nueva Nota',
-                text: 'Usa este botón para agregar una nueva nota a tu tablero cuando tengas una nueva idea.',
-                parentHighlight: true // Resaltar toolbar
-            },
-            {
-                targetSelector: '.note', 
-                title: 'Organiza y Edita',
-                text: '¡Personaliza tu tablero! Arrastra las notas para cambiar su orden e intercambiarlas. Además, puedes editar todo el contenido: la descripción, los diálogos e incluso el número de escena.',
-                highlightClass: 'note' // Resaltar nota completa
-            },
-            {
-                targetSelector: '.page-toggle', 
-                title: 'Doble Página',
-                text: 'Marca esta casilla si tu escena ocupará una doble página en el libro álbum.',
-                highlightClass: 'note' // Resaltar nota completa (contexto)
+                text: '¿Más ideas? Usa este botón para agregar una nueva nota a tu tablero.',
+                parentHighlight: true 
             },
             {
                 targetId: 'btn-save',
-                title: 'Capturar Tablero',
-                text: 'Al finalizar, haz clic aquí. Se tomará una captura de tu tablero que se descargará en tu computador. ¡Recuerda enviársela a tu profesor!',
+                title: 'Guardar Trabajo',
+                text: 'Al terminar, haz clic aquí. Se tomará una captura de tu tablero que se descargará en tu computador. ¡Envíala a tu profesor!',
                 parentHighlight: true
             }
         ];
@@ -397,7 +415,6 @@
         }
 
         function showGuideStep(index) {
-            // Limpiar resaltados previos
             document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));
             document.getElementById('toolbar').classList.remove('highlight-parent');
 
@@ -420,14 +437,10 @@
                 return;
             }
 
-            // Aplicar Resaltado (Highlight)
             if (step.parentHighlight) {
-                // Si es un botón del toolbar, resaltamos el botón
                 targetEl.classList.add('highlight-active');
-                // Y nos aseguramos que el toolbar esté encima del overlay
                 document.getElementById('toolbar').classList.add('highlight-parent');
             } else if (step.highlightClass === 'note') {
-                // Si es algo dentro de la nota, resaltamos la nota entera (si target es hijo)
                 const note = targetEl.closest('.note');
                 if(note) note.classList.add('highlight-active');
                 else targetEl.classList.add('highlight-active');
@@ -450,7 +463,6 @@
         function positionGuide(targetElement) {
             const container = document.getElementById('guide-container');
             
-            // Si resaltamos la nota completa, usamos la nota para posicionar
             if (targetElement.closest('.note') && guideSteps[currentGuideStep].highlightClass === 'note') {
                 targetElement = targetElement.closest('.note');
             }
@@ -472,16 +484,60 @@
         }
 
         function endGuide() {
-            // Limpiar todo al final
             document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));
             document.getElementById('toolbar').classList.remove('highlight-parent');
             
-            const overlay = document.getElementById('guide-overlay');
-            overlay.style.opacity = '0';
+            // Ocultar burbuja guía actual
+            document.getElementById('guide-container').style.display = 'none';
+
+            // --- NUEVA ANIMACIÓN DE EXPLOSIÓN ---
+            const bubbleContainer = document.getElementById('bubble-container');
+            bubbleContainer.style.display = 'block';
+            bubbleContainer.innerHTML = ''; // Limpiar anteriores
+
+            const numBubbles = 30; // Cantidad de burbujas
+            
+            for (let i = 0; i < numBubbles; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                // Color aleatorio de nuestra paleta
+                const randomColor = colors[Math.floor(Math.random() * colors.length)].bg;
+                bubble.style.backgroundColor = randomColor;
+                
+                // Tamaño aleatorio entre 10px y 30px
+                const size = Math.random() * 20 + 10;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+
+                // Dirección aleatoria para la explosión
+                const angle = Math.random() * Math.PI * 2; // Ángulo aleatorio
+                const distance = Math.random() * 200 + 100; // Distancia entre 100px y 300px
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                // Pasar las variables CSS para la animación
+                bubble.style.setProperty('--tx', `${tx}px`);
+                bubble.style.setProperty('--ty', `${ty}px`);
+                
+                // Un pequeño retraso aleatorio para que no salgan todas a la vez
+                bubble.style.animationDelay = `${Math.random() * 0.2}s`;
+
+                bubbleContainer.appendChild(bubble);
+            }
+
+            // Cerrar todo después de la animación
             setTimeout(() => {
-                overlay.style.display = 'none';
-                overlay.style.pointerEvents = 'none'; 
-            }, 500);
+                bubbleContainer.style.display = 'none';
+                bubbleContainer.innerHTML = ''; // Limpiar DOM
+                
+                const overlay = document.getElementById('guide-overlay');
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    overlay.style.pointerEvents = 'none'; 
+                }, 500);
+            }, 1200); // Tiempo suficiente para que termine la animación
         }
 
         // --- LÓGICA DEL TABLERO ---
